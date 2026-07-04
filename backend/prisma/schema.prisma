@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+
+model User {
+id String @id @default(cuid())
+clerkId String @unique
+name String 
+email String @unique
+
+projects Project[]
+
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+}
+
+model Project {
+id String @id @default(cuid()) //cuid generates ids like cmdu5jv6r0000t8l5u3m9k7f2
+name String
+url String
+lastStatus Int?
+lastCheckedAt DateTime?
+failureCount Int @default(0)
+userId String
+enabled Boolean @default(true)
+user User @relation(fields: [userId], references: [id])
+intervalSeconds Int
+history PingHistory[]
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt //Whenever this row is updated, automatically set this field to the current time.
+}
+
+model PingHistory{
+id String @id @default(cuid())
+status Int
+responseTime Int
+
+checkedAt DateTime @default(now())
+
+projectId String
+project Project @relation(fields: [projectId], references: [id])
+}
