@@ -21,7 +21,7 @@
 
 ## Tech Stack:
 Frontend: React
-Backend: Bun
+Backend: Bun(runtime) + Hono(framework)
 Database: Postgres + Prisma
 Caching: Redis (cron management)
 cron: Cronjob
