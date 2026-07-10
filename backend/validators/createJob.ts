@@ -15,7 +15,7 @@ export const createJobSchema = z.object({
     .number()
     .int()
     .refine(
-      (value) => [30, 60, 300].includes(value),
+      ( value ) => [30, 60, 300].includes(value),
       "Interval must be of 30, 60 or 300 seconds."
     ),
 });
