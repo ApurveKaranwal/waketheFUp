@@ -3,7 +3,7 @@ import { prisma } from "../config/db";
 
 export default async function getAllPingJobs(c: Context) {
   try {
-    const userId = "Dummy User Id";
+    const userId = "cmrf8wtxs0000x3xysq2iro6x";
 
     const projects = await prisma.project.findMany({
       where: {
@@ -20,7 +20,6 @@ export default async function getAllPingJobs(c: Context) {
         //if frontend needs any more info, we can add them here.
       }
     });
-
     return c.json({
       success: true,
       count: projects.length,

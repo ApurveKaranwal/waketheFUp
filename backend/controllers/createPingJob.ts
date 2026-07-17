@@ -17,7 +17,7 @@ export default async function createPingJob(c: Context) {
     }
 
     const { name, url, intervalSeconds } = result.data;
-    const userId = "temp-user-id" //using temp user id as clerk is not setup till yet.
+    const userId = "cmrf8wtxs0000x3xysq2iro6x" //using temp user id as clerk is not setup till yet.
 
     const existingProject = await prisma.project.findFirst({
       where: {

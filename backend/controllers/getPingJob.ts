@@ -3,7 +3,7 @@ import { prisma } from "../config/db";
 
 export default async function getPingJob(c: Context) {
   try {
-    const userId = "your dummy user id";
+    const userId = "cmrf8wtxs0000x3xysq2iro6x";
     const projectId = c.req.param("id");
     const project = await prisma.findFirst({
       where: {

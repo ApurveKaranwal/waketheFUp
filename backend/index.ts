@@ -1,7 +1,6 @@
-import { serve } from "@hono/node-server";
 import app from "./app";
 
-serve({
+Bun.serve({
   fetch: app.fetch,
   port: 3000,
 });
