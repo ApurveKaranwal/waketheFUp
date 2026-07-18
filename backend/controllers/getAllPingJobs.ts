@@ -17,14 +17,7 @@ export default async function getAllPingJobs(c: Context) {
         url: true,
         enabled: true,
         intervalSeconds: true,
-        //if frontend needs any more info, we can add them here.
-      }
-    });
-    return c.json({
-      success: true,
-      count: projects.length,
-      data: projects,
-    }, 200
+        //if frontend needs any more info, we can add them here
     );
   } catch (err) {
     console.error(err);
