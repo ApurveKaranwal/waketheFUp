@@ -22,11 +22,11 @@ export default async function manualPingJob(c: Context) {
         404
       );
     }
-
+    
+    try {
     const start = performance.now();
     const response = await fetch(project.url);
     const responseTime = Math.round(performance.now() - start);
-//we can also use performance.now() for much better accuracy
 
     await prisma.project.update({
       where: {
@@ -58,6 +58,40 @@ export default async function manualPingJob(c: Context) {
     },
       200
     );
+      
+    }
+    catch (error) {
+      console.error(error);
+
+      await prisma.project.update({
+        where: {
+          id: project.id,
+        },
+        data: {
+          lastCheckedAt: checkedAt,
+          lastStatus: 0,
+          failureCount: {
+            increment: 1,
+          },
+        },
+      });
+
+      await prisma.pingHistory.create({
+        data: {
+          projectId: project.id,
+          status: 0,
+          responseTime: 0,
+          checkedAt,
+        },
+      });
+
+      return c.json({
+        success: false,
+        message: "website is unreachable",
+      },
+        503
+      );
+    }
   }
   catch (err) {
     console.error(err);
