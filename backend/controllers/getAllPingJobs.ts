@@ -18,14 +18,19 @@ export default async function getAllPingJobs(c: Context) {
         enabled: true,
         intervalSeconds: true,
         //if frontend needs any more info, we can add them here
+      },
+    });
+    
+    return c.json(
+      {
+        success: true,
+        count: projects.length,
+        data: projects,
+      },
+      200
     );
-  } catch (err) {
+  }
+  catch (err) {
     console.error(err);
-
-    return c.json({
-      success: false,
-      message: "Interval Server Error",
-    }, 500
-    );
   }
 }
