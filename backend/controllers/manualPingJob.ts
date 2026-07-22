@@ -24,11 +24,20 @@ export default async function manualPingJob(c: Context) {
     }
     
     try {
-    const start = performance.now();
-    const response = await fetch(project.url);
-    const responseTime = Math.round(performance.now() - start);
-
-    await prisma.project.update({
+      const start = performance.now();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => {
+        controller.abort();
+        }, 10000);
+      const response = await fetch(project.url, {
+        signal: controller.signal,
+      });
+      
+      clearTimeout(timeout);
+      
+      const responseTime = Math.round(performance.now() - start);
+      
+      await prisma.project.update({
       where: {
         id: project.id,
       },
@@ -61,8 +70,13 @@ export default async function manualPingJob(c: Context) {
       
     }
     catch (error) {
+      clearTimeout(timeout);
+      if (error instanceof Error && error.name === "AbortError") {
+        console.log('Request timed out');
+      } else {
       console.error(error);
-
+      }
+      
       await prisma.project.update({
         where: {
           id: project.id,
