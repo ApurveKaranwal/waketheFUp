@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { prisma } from "../config/db";
 import { createJobSchema } from "../validators/createJob";
+import { pingQueue } from "../queues/pingQueue";
 
 export default async function createPingJob(c: Context) {
   try {
@@ -41,6 +42,19 @@ export default async function createPingJob(c: Context) {
         userId,
       },
     });
+
+    await pingQueue.upsertJobScheduler(
+      `project-${project.id}`,
+      {
+        every; intervalSeconds * 1000,
+      },
+      {
+        name: "ping-project",
+        data: {
+          projectId: project.id,
+        },
+      }
+    );
 
     return c.json({
       success: true,
