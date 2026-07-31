@@ -30,7 +30,7 @@ export default async function createPingJob(c: Context) {
     if (existingProject) {
       return c.json({
         success: false,
-        message: "This URL has already been added."
+        message: "This  URL has already been added."
       }, 409
       );
     }
