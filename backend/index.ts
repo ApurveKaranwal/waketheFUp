@@ -1,4 +1,5 @@
 import app from "./app";
+import "./workers/pingWorker"; //the import itself starts the worker, we dont need to assign it a variable.
 
 Bun.serve({
   fetch: app.fetch,
