@@ -1,43 +1,24 @@
-import type { Context } from "hono";
 import { prisma } from "../config/db";
+import { Project } from "@prisma/client";
 
-export default async function manualPingJob(c: Context) {
+export default async function pingService(project: Project) {
+  const checkedAt = new Date();
+  let timeout: ReturnType<typeof setTimeout> | undefined;
   try {
-    const projectId = c.req.param('id');
-    const userId = "cmrf8wtxs0000x3xysq2iro6x";
-    const checkedAt = new Date();
-
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        userId,
-      },
-    });
-
-    if (!project) {
-      return c.json({
-        success: false,
-        message: "Project not found",
-      },
-        404
-      );
-    }
-    
-    try {
-      const start = performance.now();
-      const controller = new AbortController();
-      const timeout = setTimeout(() => {
+    const start = performance.now();
+    const controller = new AbortController();
+    timeout = setTimeout(() => {
         controller.abort();
         }, 10000);
-      const response = await fetch(project.url, {
-        signal: controller.signal,
-      });
+    const response = await fetch(project.url, {
+      signal: controller.signal,
+    });
       
-      clearTimeout(timeout);
+    clearTimeout(timeout);
       
-      const responseTime = Math.round(performance.now() - start);
+    const responseTime = Math.round(performance.now() - start);
       
-      await prisma.project.update({
+    await prisma.project.update({
       where: {
         id: project.id,
       },
@@ -50,27 +31,25 @@ export default async function manualPingJob(c: Context) {
 
     await prisma.pingHistory.create({
       data: {
-        status: response.status,
-        responseTime,
         projectId: project.id,
-      },
-    });
-
-    return c.json({
-      success: true,
-      message: "Project checked Successfully",
-      data: {
         status: response.status,
         responseTime,
         checkedAt,
       },
-    },
-      200
-    );
-      
+    });
+
+    return {
+      success: true,
+      status: response.status,
+      responseTime,
+      checkedAt,
     }
-    catch (error) {
+  }
+  catch (error) {
+    if (timeout) {
       clearTimeout(timeout);
+    }
+    
       if (error instanceof Error && error.name === "AbortError") {
         console.log('Request timed out');
       } else {
@@ -99,22 +78,6 @@ export default async function manualPingJob(c: Context) {
         },
       });
 
-      return c.json({
-        success: false,
-        message: "website is unreachable",
-      },
-        503
-      );
-    }
-  }
-  catch (err) {
-    console.error(err);
-
-    return c.json({
-      success: false,
-      message: "Internal Server Error",
-    },
-      500
-    );
+    throw error;
   }
 }
