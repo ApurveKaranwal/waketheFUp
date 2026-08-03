@@ -2,7 +2,9 @@
   "dependencies": {
     "@prisma/client": "6",
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.80.10",
     "hono": "^4.12.27",
+    "ioredis": "^5.11.1",
     "nodemailer": "^9.0.3",
     "redis": "^6.1.0",
     "zod": "^4.4.3"
