@@ -1,5 +1,6 @@
 import type { Context } from "hono";
 import { prisma } from "../config/db";
+import { pingQueue } from "../queues/pingQueue";
 
 export default async function deletePingJob(c: Context) {
   try {
@@ -21,6 +22,10 @@ export default async function deletePingJob(c: Context) {
         404
       );
     }
+
+    await pingQueue.removeJobScheduler(
+      `project-${project.id}`
+    );
 
     const deletedProject = await prisma.project.delete({
       where: {

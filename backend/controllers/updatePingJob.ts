@@ -56,6 +56,11 @@ export default async function updatePingJob(c: Context) {
         }
       );
     }
+    else {
+      await pingQueue.removeJobScheduler(
+        `project-${updatedProject.id}`
+      );
+    }
 
     return c.json({
       success: true,
