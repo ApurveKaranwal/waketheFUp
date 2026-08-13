@@ -46,7 +46,7 @@ export default async function createPingJob(c: Context) {
     await pingQueue.upsertJobScheduler(
       `project-${project.id}`,
       {
-        every: intervalSeconds * 1000,
+        every: project.intervalSeconds * 1000,
       },
       {
         name: "ping-project",
@@ -55,6 +55,8 @@ export default async function createPingJob(c: Context) {
         },
       }
     ); 
+
+    console.log(`Scheduler Created for ${project.name} (${project.intervalSeconds}s)`);
 
     return c.json({
       success: true,

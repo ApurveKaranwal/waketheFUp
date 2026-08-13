@@ -1,6 +1,7 @@
 import type { Context } from "hono";
 import { prisma } from "../config/db";
 import { updatePingJobSchema } from "../validators/updatePingJob";
+import { pingQueue } from "../queues/pingQueue";
 
 export default async function updatePingJob(c: Context) {
   try {
@@ -40,6 +41,21 @@ export default async function updatePingJob(c: Context) {
       },
       data: parsed.data,
     });
+
+    if (updatedProject.enabled) {
+      await pingQueue.upsertJobScheduler(
+        `project-${updatedProject.id}`,
+        {
+          every: updatedProject.intervalSeconds * 1000,
+        },
+        {
+          name: "ping-project",
+          data: {
+            projectId: updatedProject.id,
+          }
+        }
+      );
+    }
 
     return c.json({
       success: true,
