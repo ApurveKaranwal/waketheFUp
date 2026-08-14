@@ -53,6 +53,13 @@ export default async function createPingJob(c: Context) {
         data: {
           projectId: project.id,
         },
+        opts: {
+          attempts: 3,
+          backoff: {
+            type: "exponential",
+            delay: 1000,
+          },
+        },
       }
     ); 
 

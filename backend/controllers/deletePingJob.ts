@@ -47,7 +47,7 @@ export default async function deletePingJob(c: Context) {
       success: false,
       message: "Internal server error."
     },
-    500
-    )
+      500
+    );
   }
 }
