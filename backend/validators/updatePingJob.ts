@@ -22,6 +22,8 @@ export const updatePingJobSchema = z.object({
       "Inteval must be of 30, 60 or 300 seconds."
     )
     .optional(),
+
+  enabled: z.boolean().optional(),
 });
 
 export type UpdatePingJobInput = z.infer<typeof updatePingJobSchema>;
