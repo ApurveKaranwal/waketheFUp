@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WakeTheFUp (WTFup) - Simple Block Diagram</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #06090e;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0369a1, #075985);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background-color: #1e293b;
+      color: #e2e8f0;
+      border-color: #334155;
+    }
+    .btn-secondary:hover {
+      background-color: #334155;
+      transform: translateY(-1px);
+    }
+    .diagram-container {
+      width: 100%;
+      max-width: 1200px;
+      background-color: #0b0f19;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      padding: 10px;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      background-color: #10b981;
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>WakeTheFUp (WTFup) — Architecture Block Diagram</h1>
+    <p>Clean, High-Level Component &amp; Flow Overview</p>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn btn-primary" onclick="downloadPNG()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download High-Res PNG (LinkedIn &amp; Slides)
+    </button>
+    <button class="btn btn-secondary" onclick="downloadSVG()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Download Vector SVG
+    </button>
+  </div>
+
+  <div class="diagram-container">
+    <svg id="blockDiagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560">
+      <defs>
+        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#080C14" />
+          <stop offset="50%" stop-color="#0E1726" />
+          <stop offset="100%" stop-color="#060A10" />
+        </linearGradient>
+
+        <linearGradient id="blueCard" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0284C7" stop-opacity="0.2" />
+          <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+        </linearGradient>
+        <linearGradient id="indigoCard" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.25" />
+          <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+        </linearGradient>
+        <linearGradient id="amberCard" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#D97706" stop-opacity="0.25" />
+          <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+        </linearGradient>
+        <linearGradient id="emeraldCard" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#059669" stop-opacity="0.25" />
+          <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+        </linearGradient>
+        <linearGradient id="fuchsiaCard" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#C026D3" stop-opacity="0.25" />
+          <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+        </linearGradient>
+        <linearGradient id="tealCard" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0D9488" stop-opacity="0.25" />
+          <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+        </linearGradient>
+
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.5" />
+        </filter>
+
+        <marker id="mBlue" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#38BDF8" />
+        </marker>
+        <marker id="mIndigo" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#818CF8" />
+        </marker>
+        <marker id="mAmber" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#FBBF24" />
+        </marker>
+        <marker id="mEmerald" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#34D399" />
+        </marker>
+        <marker id="mTeal" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#2DD4BF" />
+        </marker>
+      </defs>
+
+      <style>
+        .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 24px; font-weight: 800; fill: #FFFFFF; }
+        .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; fill: #94A3B8; }
+        .block-name { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 17px; font-weight: 700; fill: #F8FAFC; }
+        .block-tech { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; font-weight: 600; }
+        .block-role { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; fill: #94A3B8; }
+        .flow-badge { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; }
+      </style>
+
+      <!-- Background -->
+      <rect width="1200" height="560" fill="url(#bgGrad)" />
+
+      <!-- HEADER -->
+      <g transform="translate(60, 40)">
+        <text x="0" y="0" class="title">WakeTheFUp (WTFup) — Architecture Block Diagram</text>
+        <text x="0" y="22" class="subtitle">High-Level Flow of Keep-Alive Monitoring &amp; Telemetry Pipeline</text>
+      </g>
+
+      <!-- 1. FRONTEND BLOCK -->
+      <g transform="translate(60, 110)">
+        <rect width="210" height="120" rx="14" fill="url(#blueCard)" stroke="#38BDF8" stroke-width="1.6" filter="url(#shadow)" />
+        <circle cx="28" cy="32" r="12" fill="#0284C7" fill-opacity="0.3" />
+        <text x="24" y="37" fill="#38BDF8" font-size="13">👤</text>
+        <text x="50" y="36" class="block-name">Frontend UI</text>
+        <text x="20" y="66" class="block-tech" fill="#38BDF8">Next.js 16 + React 19</text>
+        <text x="20" y="88" class="block-role">• User URL input</text>
+        <text x="20" y="104" class="block-role">• Select interval (30s/60s)</text>
+      </g>
+
+      <!-- 2. API SERVER BLOCK -->
+      <g transform="translate(360, 110)">
+        <rect width="210" height="120" rx="14" fill="url(#indigoCard)" stroke="#818CF8" stroke-width="1.6" filter="url(#shadow)" />
+        <circle cx="28" cy="32" r="12" fill="#4F46E5" fill-opacity="0.3" />
+        <text x="24" y="37" fill="#818CF8" font-size="13">⚡</text>
+        <text x="50" y="36" class="block-name">API Server</text>
+        <text x="20" y="66" class="block-tech" fill="#A5B4FC">Bun + Hono + Zod</text>
+        <text x="20" y="88" class="block-role">• Validates payload</text>
+        <text x="20" y="104" class="block-role">• Manages CRUD &amp; queue</text>
+      </g>
+
+      <!-- 3. DATABASE BLOCK -->
+      <g transform="translate(930, 110)">
+        <rect width="210" height="120" rx="14" fill="url(#tealCard)" stroke="#2DD4BF" stroke-width="1.6" filter="url(#shadow)" />
+        <circle cx="28" cy="32" r="12" fill="#0D9488" fill-opacity="0.3" />
+        <text x="23" y="37" fill="#2DD4BF" font-size="13">🐘</text>
+        <text x="50" y="36" class="block-name">Database</text>
+        <text x="20" y="66" class="block-tech" fill="#5EEAD4">PostgreSQL + Prisma</text>
+        <text x="20" y="88" class="block-role">• User &amp; Project configs</text>
+        <text x="20" y="104" class="block-role">• Ping history &amp; latency</text>
+      </g>
+
+      <!-- 4. QUEUE BLOCK -->
+      <g transform="translate(360, 360)">
+        <rect width="210" height="120" rx="14" fill="url(#amberCard)" stroke="#FBBF24" stroke-width="1.6" filter="url(#shadow)" />
+        <circle cx="28" cy="32" r="12" fill="#D97706" fill-opacity="0.3" />
+        <text x="24" y="37" fill="#FBBF24" font-size="13">🐂</text>
+        <text x="50" y="36" class="block-name">Job Queue</text>
+        <text x="20" y="66" class="block-tech" fill="#FDE68A">BullMQ + Redis</text>
+        <text x="20" y="88" class="block-role">• Repeatable schedulers</text>
+        <text x="20" y="104" class="block-role">• 30s / 60s / 300s ticks</text>
+      </g>
+
+      <!-- 5. WORKER BLOCK -->
+      <g transform="translate(645, 360)">
+        <rect width="210" height="120" rx="14" fill="url(#emeraldCard)" stroke="#34D399" stroke-width="1.6" filter="url(#shadow)" />
+        <circle cx="28" cy="32" r="12" fill="#059669" fill-opacity="0.3" />
+        <text x="24" y="37" fill="#34D399" font-size="13">⚙️</text>
+        <text x="50" y="36" class="block-name">Ping Worker</text>
+        <text x="20" y="66" class="block-tech" fill="#6EE7B7">PingService Engine</text>
+        <text x="20" y="88" class="block-role">• 10s AbortController timeout</text>
+        <text x="20" y="104" class="block-role">• Latency benchmarking (ms)</text>
+      </g>
+
+      <!-- 6. TARGET BACKEND BLOCK -->
+      <g transform="translate(930, 360)">
+        <rect width="210" height="120" rx="14" fill="url(#fuchsiaCard)" stroke="#E879F9" stroke-width="1.6" filter="url(#shadow)" />
+        <circle cx="28" cy="32" r="12" fill="#C026D3" fill-opacity="0.3" />
+        <text x="24" y="37" fill="#E879F9" font-size="13">🌐</text>
+        <text x="50" y="36" class="block-name">Target Server</text>
+        <text x="20" y="66" class="block-tech" fill="#F0ABFC">User's Backend API</text>
+        <text x="20" y="88" class="block-role">• Render / Railway / Fly.io</text>
+        <text x="20" y="104" class="block-role">• Kept awake 24/7</text>
+      </g>
+
+      <!-- FLOWS -->
+      <path d="M 270 170 L 350 170" stroke="#38BDF8" stroke-width="2.2" fill="none" marker-end="url(#mBlue)" />
+      <rect x="280" y="148" width="60" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+      <text x="310" y="161" text-anchor="middle" class="flow-badge" fill="#38BDF8">1. POST</text>
+
+      <path d="M 570 170 L 920 170" stroke="#2DD4BF" stroke-width="2.2" fill="none" marker-end="url(#mTeal)" />
+      <rect x="705" y="148" width="85" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+      <text x="747" y="161" text-anchor="middle" class="flow-badge" fill="#2DD4BF">2. Save Info</text>
+
+      <path d="M 465 230 L 465 350" stroke="#818CF8" stroke-width="2.2" fill="none" marker-end="url(#mIndigo)" />
+      <rect x="400" y="280" width="130" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+      <text x="465" y="293" text-anchor="middle" class="flow-badge" fill="#818CF8">3. Schedule Timer</text>
+
+      <path d="M 570 420 L 635 420" stroke="#FBBF24" stroke-width="2.2" fill="none" marker-end="url(#mAmber)" />
+      <rect x="580" y="398" width="48" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+      <text x="604" y="411" text-anchor="middle" class="flow-badge" fill="#FBBF24">4. Tick</text>
+
+      <path d="M 855 420 L 920 420" stroke="#34D399" stroke-width="2.2" fill="none" marker-end="url(#mEmerald)" />
+      <rect x="862" y="398" width="55" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+      <text x="889" y="411" text-anchor="middle" class="flow-badge" fill="#34D399">5. Ping</text>
+
+      <path d="M 750 360 L 750 255 L 945 255 L 945 238" stroke="#2DD4BF" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#mTeal)" />
+      <rect x="765" y="246" width="150" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+      <text x="840" y="259" text-anchor="middle" class="flow-badge" fill="#2DD4BF">6. Write Latency &amp; Status</text>
+
+      <!-- FOOTER -->
+      <g transform="translate(60, 525)">
+        <text x="0" y="0" font-family="-apple-system, sans-serif" font-size="11" fill="#64748B">WakeTheFUp (WTFup) Core Architecture • Simplified Block Model</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="toast" id="toast">Downloaded successfully!</div>
+
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function downloadSVG() {
+      const svg = document.getElementById('blockDiagram');
+      const serializer = new XMLSerializer();
+      let source = serializer.serializeToString(svg);
+      source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+      const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "WakeTheFUp_Block_Diagram.svg";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("SVG Block Diagram Downloaded!");
+    }
+
+    function downloadPNG() {
+      const svg = document.getElementById('blockDiagram');
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(svg);
+      const canvas = document.createElement("canvas");
+      const scale = 2; // 2400x1120
+      canvas.width = 1200 * scale;
+      canvas.height = 560 * scale;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(scale, scale);
+
+      const img = new Image();
+      const svgBlob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+      const URL = window.URL || window.webkitURL || window;
+      const blobURL = URL.createObjectURL(svgBlob);
+
+      img.onload = function () {
+        ctx.drawImage(img, 0, 0);
+        const pngURL = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.href = pngURL;
+        downloadLink.download = "WakeTheFUp_Block_Diagram.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(blobURL);
+        showToast("High-Res PNG Downloaded!");
+      };
+
+      img.src = blobURL;
+    }
+  </script>
+</body>
+</html>

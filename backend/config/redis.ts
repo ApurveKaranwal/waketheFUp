@@ -1,4 +1,5 @@
 import IORedis from "ioredis";
+import { logError } from "../logger";
 
 export const redis = new IORedis(
   process.env.REDIS_URL || "redis://localhost:6379",
@@ -12,5 +13,5 @@ redis.on("connect", () => {
 });
 
 redis.on("error", (error) => {
-  console.log("Redis connection error", error);
+  logError("redis.connection_failed", error);
 });

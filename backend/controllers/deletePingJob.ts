@@ -1,11 +1,12 @@
-import type { Context } from "hono";
+import type { AuthContext } from "../types";
 import { prisma } from "../config/db";
-import { pingQueue } from "../queues/pingQueue";
+import { syncProjectScheduler } from "../services/projectScheduler";
+import { logError } from "../logger";
 
-export default async function deletePingJob(c: Context) {
+export default async function deletePingJob(c: AuthContext) {
   try {
     const projectId = c.req.param('id');
-    const userId = "cmrf8wtxs0000x3xysq2iro6x";
+    const userId = c.get("userId");
     
     const project = await prisma.project.findFirst({
       where: {
@@ -23,26 +24,31 @@ export default async function deletePingJob(c: Context) {
       );
     }
 
-    await pingQueue.removeJobScheduler(
-      `project-${project.id}`
-    );
-
     const deletedProject = await prisma.project.delete({
       where: {
         id: project.id,
       },
     });
 
+    let scheduleSynced = true;
+    try {
+      await syncProjectScheduler({ ...project, enabled: false });
+    } catch (error) {
+      scheduleSynced = false;
+      logError("monitor.delete_schedule_sync_failed", error, { projectId: project.id });
+    }
+
     return c.json({
       success: true,
       message: "Project deleted successfully.",
+      scheduleSynced,
       data: deletedProject,
     },
       200
     );
   }
   catch (err) {
-    console.error(err);
+    logError("monitor.delete_failed", err);
     return c.json({
       success: false,
       message: "Internal server error."

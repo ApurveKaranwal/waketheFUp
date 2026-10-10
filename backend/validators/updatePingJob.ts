@@ -19,7 +19,7 @@ export const updatePingJobSchema = z.object({
     .int()
     .refine(
       (value) => [30, 60, 300].includes(value),
-      "Inteval must be of 30, 60 or 300 seconds."
+      "Interval must be of 30, 60 or 300 seconds."
     )
     .optional(),
 

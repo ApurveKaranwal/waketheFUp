@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080C14" />
+      <stop offset="50%" stop-color="#0E1726" />
+      <stop offset="100%" stop-color="#060A10" />
+    </linearGradient>
+
+    <!-- Block Gradients -->
+    <linearGradient id="blueCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="indigoCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="amberCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97706" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="emeraldCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="fuchsiaCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C026D3" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="tealCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0D9488" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+
+    <!-- Markers -->
+    <marker id="mBlue" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#38BDF8" />
+    </marker>
+    <marker id="mIndigo" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#818CF8" />
+    </marker>
+    <marker id="mAmber" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#FBBF24" />
+    </marker>
+    <marker id="mEmerald" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#34D399" />
+    </marker>
+    <marker id="mTeal" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#2DD4BF" />
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 24px; font-weight: 800; fill: #FFFFFF; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; fill: #94A3B8; }
+    .block-name { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 17px; font-weight: 700; fill: #F8FAFC; }
+    .block-tech { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; font-weight: 600; }
+    .block-role { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; fill: #94A3B8; }
+    .flow-badge { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1200" height="560" fill="url(#bgGrad)" />
+
+  <!-- HEADER -->
+  <g transform="translate(60, 40)">
+    <text x="0" y="0" class="title">WakeTheFUp (WTFup) — Architecture Block Diagram</text>
+    <text x="0" y="22" class="subtitle">High-Level Flow of Keep-Alive Monitoring &amp; Telemetry Pipeline</text>
+  </g>
+
+  <!-- ==================== TOP ROW ==================== -->
+
+  <!-- 1. FRONTEND BLOCK -->
+  <g transform="translate(60, 110)">
+    <rect width="210" height="120" rx="14" fill="url(#blueCard)" stroke="#38BDF8" stroke-width="1.6" filter="url(#shadow)" />
+    <circle cx="28" cy="32" r="12" fill="#0284C7" fill-opacity="0.3" />
+    <text x="24" y="37" fill="#38BDF8" font-size="13">👤</text>
+    <text x="50" y="36" class="block-name">Frontend UI</text>
+    <text x="20" y="66" class="block-tech" fill="#38BDF8">Next.js 16 + React 19</text>
+    <text x="20" y="88" class="block-role">• User URL input</text>
+    <text x="20" y="104" class="block-role">• Select interval (30s/60s)</text>
+  </g>
+
+  <!-- 2. API SERVER BLOCK -->
+  <g transform="translate(360, 110)">
+    <rect width="210" height="120" rx="14" fill="url(#indigoCard)" stroke="#818CF8" stroke-width="1.6" filter="url(#shadow)" />
+    <circle cx="28" cy="32" r="12" fill="#4F46E5" fill-opacity="0.3" />
+    <text x="24" y="37" fill="#818CF8" font-size="13">⚡</text>
+    <text x="50" y="36" class="block-name">API Server</text>
+    <text x="20" y="66" class="block-tech" fill="#A5B4FC">Bun + Hono + Zod</text>
+    <text x="20" y="88" class="block-role">• Validates payload</text>
+    <text x="20" y="104" class="block-role">• Manages CRUD &amp; queue</text>
+  </g>
+
+  <!-- 3. DATABASE BLOCK (TOP RIGHT) -->
+  <g transform="translate(930, 110)">
+    <rect width="210" height="120" rx="14" fill="url(#tealCard)" stroke="#2DD4BF" stroke-width="1.6" filter="url(#shadow)" />
+    <circle cx="28" cy="32" r="12" fill="#0D9488" fill-opacity="0.3" />
+    <text x="23" y="37" fill="#2DD4BF" font-size="13">🐘</text>
+    <text x="50" y="36" class="block-name">Database</text>
+    <text x="20" y="66" class="block-tech" fill="#5EEAD4">PostgreSQL + Prisma</text>
+    <text x="20" y="88" class="block-role">• User &amp; Project configs</text>
+    <text x="20" y="104" class="block-role">• Ping history &amp; latency</text>
+  </g>
+
+  <!-- ==================== BOTTOM ROW ==================== -->
+
+  <!-- 4. QUEUE & SCHEDULER BLOCK -->
+  <g transform="translate(360, 360)">
+    <rect width="210" height="120" rx="14" fill="url(#amberCard)" stroke="#FBBF24" stroke-width="1.6" filter="url(#shadow)" />
+    <circle cx="28" cy="32" r="12" fill="#D97706" fill-opacity="0.3" />
+    <text x="24" y="37" fill="#FBBF24" font-size="13">🐂</text>
+    <text x="50" y="36" class="block-name">Job Queue</text>
+    <text x="20" y="66" class="block-tech" fill="#FDE68A">BullMQ + Redis</text>
+    <text x="20" y="88" class="block-role">• Repeatable schedulers</text>
+    <text x="20" y="104" class="block-role">• 30s / 60s / 300s ticks</text>
+  </g>
+
+  <!-- 5. WORKER BLOCK -->
+  <g transform="translate(645, 360)">
+    <rect width="210" height="120" rx="14" fill="url(#emeraldCard)" stroke="#34D399" stroke-width="1.6" filter="url(#shadow)" />
+    <circle cx="28" cy="32" r="12" fill="#059669" fill-opacity="0.3" />
+    <text x="24" y="37" fill="#34D399" font-size="13">⚙️</text>
+    <text x="50" y="36" class="block-name">Ping Worker</text>
+    <text x="20" y="66" class="block-tech" fill="#6EE7B7">PingService Engine</text>
+    <text x="20" y="88" class="block-role">• 10s AbortController timeout</text>
+    <text x="20" y="104" class="block-role">• Latency benchmarking (ms)</text>
+  </g>
+
+  <!-- 6. TARGET BACKEND BLOCK -->
+  <g transform="translate(930, 360)">
+    <rect width="210" height="120" rx="14" fill="url(#fuchsiaCard)" stroke="#E879F9" stroke-width="1.6" filter="url(#shadow)" />
+    <circle cx="28" cy="32" r="12" fill="#C026D3" fill-opacity="0.3" />
+    <text x="24" y="37" fill="#E879F9" font-size="13">🌐</text>
+    <text x="50" y="36" class="block-name">Target Server</text>
+    <text x="20" y="66" class="block-tech" fill="#F0ABFC">User's Backend API</text>
+    <text x="20" y="88" class="block-role">• Render / Railway / Fly.io</text>
+    <text x="20" y="104" class="block-role">• Kept awake 24/7</text>
+  </g>
+
+  <!-- ==================== FLOW ARROWS & LABELS ==================== -->
+
+  <!-- Flow 1: Frontend -> API Server -->
+  <path d="M 270 170 L 350 170" stroke="#38BDF8" stroke-width="2.2" fill="none" marker-end="url(#mBlue)" />
+  <rect x="280" y="148" width="60" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="310" y="161" text-anchor="middle" class="flow-badge" fill="#38BDF8">1. POST</text>
+
+  <!-- Flow 2: API Server -> Database -->
+  <path d="M 570 170 L 920 170" stroke="#2DD4BF" stroke-width="2.2" fill="none" marker-end="url(#mTeal)" />
+  <rect x="705" y="148" width="85" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="747" y="161" text-anchor="middle" class="flow-badge" fill="#2DD4BF">2. Save Info</text>
+
+  <!-- Flow 3: API Server -> Queue -->
+  <path d="M 465 230 L 465 350" stroke="#818CF8" stroke-width="2.2" fill="none" marker-end="url(#mIndigo)" />
+  <rect x="400" y="280" width="130" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="465" y="293" text-anchor="middle" class="flow-badge" fill="#818CF8">3. Schedule Timer</text>
+
+  <!-- Flow 4: Queue -> Worker -->
+  <path d="M 570 420 L 635 420" stroke="#FBBF24" stroke-width="2.2" fill="none" marker-end="url(#mAmber)" />
+  <rect x="580" y="398" width="48" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="604" y="411" text-anchor="middle" class="flow-badge" fill="#FBBF24">4. Tick</text>
+
+  <!-- Flow 5: Worker -> Target Server -->
+  <path d="M 855 420 L 920 420" stroke="#34D399" stroke-width="2.2" fill="none" marker-end="url(#mEmerald)" />
+  <rect x="862" y="398" width="55" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="889" y="411" text-anchor="middle" class="flow-badge" fill="#34D399">5. Ping</text>
+
+  <!-- Flow 6: Worker -> Database (Logs) -->
+  <path d="M 750 360 L 750 255 L 945 255 L 945 238" stroke="#2DD4BF" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#mTeal)" />
+  <rect x="765" y="246" width="150" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="840" y="259" text-anchor="middle" class="flow-badge" fill="#2DD4BF">6. Write Latency &amp; Status</text>
+
+  <!-- FOOTER -->
+  <g transform="translate(60, 525)">
+    <text x="0" y="0" font-family="-apple-system, sans-serif" font-size="11" fill="#64748B">WakeTheFUp (WTFup) Core Architecture • Simplified Block Model</text>
+  </g>
+</svg>

@@ -1,9 +1,9 @@
-import app from "./app";
-import "./workers/pingWorker"; //the import itself starts the worker, we dont need to assign it a variable.
+import { startBackend } from "./runtime";
+import { logError } from "./logger";
 
-Bun.serve({
-  fetch: app.fetch,
-  port: 3000,
+// The combined process keeps the existing local development command working.
+// Production should run backend/api.ts and backend/worker.ts as separate services.
+startBackend({ api: true, workers: true }).catch((error) => {
+  logError("backend.startup_failed", error);
+  process.exitCode = 1;
 });
-
-console.log("server is running");

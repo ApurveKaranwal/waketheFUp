@@ -1,0 +1,256 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080C14" />
+      <stop offset="50%" stop-color="#0E1726" />
+      <stop offset="100%" stop-color="#060A10" />
+    </linearGradient>
+
+    <!-- Card Gradients -->
+    <linearGradient id="clientGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="apiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1B4B" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="queueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#450A0A" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#18181B" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="workerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="dbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A5F" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0B1528" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="targetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B1D54" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#18122B" stop-opacity="0.9" />
+    </linearGradient>
+
+    <!-- Glow & Shadow Filters -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+
+    <!-- Arrow Markers -->
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#38BDF8" />
+    </marker>
+    <marker id="arrowAmber" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#FBBF24" />
+    </marker>
+    <marker id="arrowEmerald" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#34D399" />
+    </marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#C084FC" />
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 26px; font-weight: 800; fill: #FFFFFF; letter-spacing: -0.5px; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 400; fill: #94A3B8; }
+    .layer-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
+    .card-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; font-weight: 700; fill: #F8FAFC; }
+    .card-desc { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 12px; fill: #94A3B8; }
+    .badge { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; font-weight: 600; }
+    .flow-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; font-weight: 600; }
+    .grid-line { stroke: #1E293B; stroke-width: 0.5; stroke-dasharray: 4 4; opacity: 0.4; }
+  </style>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="800" fill="url(#bgGradient)" />
+
+  <!-- Background Decorative Grid -->
+  <line x1="50" y1="100" x2="1150" y2="100" class="grid-line" />
+  <line x1="50" y1="280" x2="1150" y2="280" class="grid-line" />
+  <line x1="50" y1="460" x2="1150" y2="460" class="grid-line" />
+  <line x1="50" y1="640" x2="1150" y2="640" class="grid-line" />
+  <line x1="400" y1="80" x2="400" y2="740" class="grid-line" />
+  <line x1="800" y1="80" x2="800" y2="740" class="grid-line" />
+
+  <!-- HEADER -->
+  <g transform="translate(60, 48)">
+    <rect x="0" y="-4" width="40" height="40" rx="10" fill="#38BDF8" fill-opacity="0.15" stroke="#38BDF8" stroke-width="1.5" />
+    <path d="M 20 6 L 11 20 L 19 20 L 17 30 L 29 16 L 21 16 Z" fill="#38BDF8" />
+    <text x="52" y="16" class="title">WakeTheFUp (WTFup)</text>
+    <text x="52" y="34" class="subtitle">Distributed Keep-Alive &amp; Real-Time Uptime Monitoring System Architecture</text>
+
+    <!-- Top Badges -->
+    <g transform="translate(760, 4)">
+      <rect x="0" y="0" width="85" height="26" rx="6" fill="#1E293B" stroke="#334155" />
+      <text x="42" y="17" text-anchor="middle" class="badge" fill="#38BDF8">⚡ Bun 1.x</text>
+      <rect x="95" y="0" width="85" height="26" rx="6" fill="#1E293B" stroke="#334155" />
+      <text x="137" y="17" text-anchor="middle" class="badge" fill="#F43F5E">🔥 Hono 4</text>
+      <rect x="190" y="0" width="95" height="26" rx="6" fill="#1E293B" stroke="#334155" />
+      <text x="237" y="17" text-anchor="middle" class="badge" fill="#FBBF24">🐂 BullMQ 5</text>
+      <rect x="295" y="0" width="90" height="26" rx="6" fill="#1E293B" stroke="#334155" />
+      <text x="340" y="17" text-anchor="middle" class="badge" fill="#34D399">🐘 Postgres</text>
+    </g>
+  </g>
+
+  <!-- ==================== ROW 1 ==================== -->
+
+  <!-- 1. CLIENT LAYER -->
+  <g transform="translate(60, 110)">
+    <text x="0" y="0" class="layer-title" fill="#38BDF8">1. Client Layer</text>
+    <rect x="0" y="14" width="310" height="150" rx="14" fill="url(#clientGrad)" stroke="#38BDF8" stroke-width="1.5" stroke-opacity="0.4" filter="url(#cardShadow)" />
+    <circle cx="28" cy="42" r="12" fill="#38BDF8" fill-opacity="0.2" />
+    <path d="M 23 42 L 33 42 M 28 37 L 33 42 L 28 47" stroke="#38BDF8" stroke-width="1.8" fill="none" stroke-linecap="round" />
+    <text x="48" y="46" class="card-title">Next.js 16 + React 19</text>
+    <text x="20" y="74" class="card-desc">• Tailwind CSS v4 Modern Dashboard UI</text>
+    <text x="20" y="94" class="card-desc">• Project registration &amp; Interval selector</text>
+    <text x="20" y="114" class="card-desc">• Real-time status toggles &amp; Latency charts</text>
+    <rect x="20" y="130" width="130" height="20" rx="4" fill="#0284C7" fill-opacity="0.2" stroke="#0284C7" stroke-width="0.8" />
+    <text x="85" y="144" text-anchor="middle" class="badge" fill="#7DD3FC">HTTP / REST Client</text>
+  </g>
+
+  <!-- 2. API GATEWAY & ROUTER -->
+  <g transform="translate(445, 110)">
+    <text x="0" y="0" class="layer-title" fill="#818CF8">2. API &amp; HTTP Routing Layer</text>
+    <rect x="0" y="14" width="320" height="150" rx="14" fill="url(#apiGrad)" stroke="#818CF8" stroke-width="1.5" stroke-opacity="0.5" filter="url(#cardShadow)" />
+    <circle cx="28" cy="42" r="12" fill="#818CF8" fill-opacity="0.2" />
+    <text x="24" y="46" fill="#818CF8" font-size="14" font-weight="bold">⚡</text>
+    <text x="48" y="46" class="card-title">Bun Runtime + Hono API</text>
+    <text x="20" y="74" class="card-desc">• <tspan fill="#A5B4FC" font-weight="600">/ping</tspan> CRUD Routes &amp; Controllers</text>
+    <text x="20" y="94" class="card-desc">• <tspan fill="#A5B4FC" font-weight="600">Zod Schema Validation</tspan> (30s, 60s, 300s)</text>
+    <text x="20" y="114" class="card-desc">• Upserts &amp; removes repeatable BullMQ jobs</text>
+    <rect x="20" y="130" width="115" height="20" rx="4" fill="#4F46E5" fill-opacity="0.3" stroke="#6366F1" stroke-width="0.8" />
+    <text x="77" y="144" text-anchor="middle" class="badge" fill="#C7D2FE">Port :3000</text>
+  </g>
+
+  <!-- 3. DATABASE (POSTGRESQL) -->
+  <g transform="translate(835, 110)">
+    <text x="0" y="0" class="layer-title" fill="#34D399">3. Persistent Database</text>
+    <rect x="0" y="14" width="305" height="230" rx="14" fill="url(#dbGrad)" stroke="#34D399" stroke-width="1.5" stroke-opacity="0.4" filter="url(#cardShadow)" />
+    <circle cx="28" cy="42" r="12" fill="#34D399" fill-opacity="0.2" />
+    <text x="23" y="46" fill="#34D399" font-size="13">🐘</text>
+    <text x="48" y="46" class="card-title">PostgreSQL + Prisma 6</text>
+    
+    <!-- Model 1 -->
+    <rect x="18" y="65" width="268" height="42" rx="6" fill="#0B132B" stroke="#1E293B" />
+    <text x="28" y="82" class="badge" fill="#6EE7B7">Model User</text>
+    <text x="28" y="97" font-size="11" fill="#94A3B8" font-family="sans-serif">id, clerkId, name, email</text>
+
+    <!-- Model 2 -->
+    <rect x="18" y="114" width="268" height="52" rx="6" fill="#0B132B" stroke="#1E293B" />
+    <text x="28" y="131" class="badge" fill="#6EE7B7">Model Project (Indexed: userId)</text>
+    <text x="28" y="146" font-size="11" fill="#94A3B8" font-family="sans-serif">url, intervalSeconds, enabled, failureCount</text>
+    <text x="28" y="159" font-size="11" fill="#94A3B8" font-family="sans-serif">lastStatus, lastCheckedAt</text>
+
+    <!-- Model 3 -->
+    <rect x="18" y="173" width="268" height="48" rx="6" fill="#0B132B" stroke="#1E293B" />
+    <text x="28" y="190" class="badge" fill="#6EE7B7">Model PingHistory (Cascade Delete)</text>
+    <text x="28" y="206" font-size="11" fill="#94A3B8" font-family="sans-serif">status, responseTime (ms), checkedAt</text>
+  </g>
+
+  <!-- ==================== ROW 2 ==================== -->
+
+  <!-- 4. DISTRIBUTED QUEUE & REDIS -->
+  <g transform="translate(60, 340)">
+    <text x="0" y="0" class="layer-title" fill="#FBBF24">4. Distributed Scheduler &amp; Queue</text>
+    <rect x="0" y="14" width="310" height="175" rx="14" fill="url(#queueGrad)" stroke="#FBBF24" stroke-width="1.5" stroke-opacity="0.5" filter="url(#cardShadow)" />
+    <circle cx="28" cy="42" r="12" fill="#FBBF24" fill-opacity="0.2" />
+    <text x="23" y="47" fill="#FBBF24" font-size="13">🐂</text>
+    <text x="48" y="46" class="card-title">BullMQ + IORedis</text>
+    <text x="20" y="74" class="card-desc">• <tspan fill="#FDE68A" font-weight="600">Dynamic Repeatable Schedulers:</tspan></text>
+    <text x="30" y="92" font-family="ui-monospace, monospace" font-size="11" fill="#FDE68A">key: `project-${projectId}`</text>
+    <text x="20" y="114" class="card-desc">• Precision intervals: <tspan fill="#FDE68A" font-weight="600">30s, 60s, 300s</tspan></text>
+    <text x="20" y="134" class="card-desc">• 3 Retries with Exponential Backoff</text>
+    <text x="20" y="154" class="card-desc">• Redis persistence &amp; scheduler removal</text>
+    <rect x="20" y="162" width="145" height="18" rx="4" fill="#B45309" fill-opacity="0.3" stroke="#F59E0B" stroke-width="0.8" />
+    <text x="92" y="175" text-anchor="middle" class="badge" fill="#FEF3C7">Queue: "pingQueue"</text>
+  </g>
+
+  <!-- 5. WORKER & PING SERVICE -->
+  <g transform="translate(445, 340)">
+    <text x="0" y="0" class="layer-title" fill="#34D399">5. Background Worker Engine</text>
+    <rect x="0" y="14" width="320" height="175" rx="14" fill="url(#workerGrad)" stroke="#34D399" stroke-width="1.5" stroke-opacity="0.5" filter="url(#cardShadow)" />
+    <circle cx="28" cy="42" r="12" fill="#34D399" fill-opacity="0.2" />
+    <text x="23" y="47" fill="#34D399" font-size="13">⚙️</text>
+    <text x="48" y="46" class="card-title">PingWorker &amp; PingService</text>
+    <text x="20" y="74" class="card-desc">• Asynchronously pulls jobs from <tspan fill="#A7F3D0" font-weight="600">pingQueue</tspan></text>
+    <text x="20" y="94" class="card-desc">• Verifies project state &amp; <tspan fill="#A7F3D0" font-weight="600">enabled</tspan> status</text>
+    <text x="20" y="114" class="card-desc">• <tspan fill="#6EE7B7" font-weight="600">AbortController</tspan> with 10s strict timeout</text>
+    <text x="20" y="134" class="card-desc">• Latency benchmarking (<tspan font-family="monospace" fill="#6EE7B7">performance.now()</tspan>)</text>
+    <text x="20" y="154" class="card-desc">• Increments/resets failure count automatically</text>
+  </g>
+
+  <!-- 6. MONITORED TARGETS -->
+  <g transform="translate(445, 595)">
+    <text x="0" y="0" class="layer-title" fill="#C084FC">6. External Target Backends</text>
+    <rect x="0" y="14" width="320" height="120" rx="14" fill="url(#targetGrad)" stroke="#C084FC" stroke-width="1.5" stroke-opacity="0.5" filter="url(#cardShadow)" />
+    <circle cx="28" cy="42" r="12" fill="#C084FC" fill-opacity="0.2" />
+    <text x="23" y="47" fill="#C084FC" font-size="13">🌐</text>
+    <text x="48" y="46" class="card-title">Monitored Web Services</text>
+    <text x="20" y="74" class="card-desc">• Free-tier cloud hosts (Render, Railway, Fly.io, etc.)</text>
+    <text x="20" y="94" class="card-desc">• Prevents instance sleeping &amp; cold-starts</text>
+    <text x="20" y="114" class="card-desc">• Returns HTTP Status (200 OK / 4xx / 5xx)</text>
+  </g>
+
+  <!-- PLANNED: EMAIL ALERTS -->
+  <g transform="translate(835, 410)">
+    <text x="0" y="0" class="layer-title" fill="#FB7185">Planned Alert Subsystem</text>
+    <rect x="0" y="14" width="305" height="105" rx="14" fill="#2A121A" stroke="#FB7185" stroke-width="1.2" stroke-dasharray="5 5" stroke-opacity="0.8" />
+    <circle cx="28" cy="40" r="12" fill="#FB7185" fill-opacity="0.2" />
+    <text x="23" y="45" fill="#FB7185" font-size="13">📩</text>
+    <text x="48" y="44" class="card-title">Nodemailer Alert Dispatcher</text>
+    <text x="20" y="72" class="card-desc">• Triggers when status != 200 or on timeout</text>
+    <text x="20" y="92" class="card-desc">• Sends downtime notification email to user</text>
+    <rect x="20" y="98" width="85" height="16" rx="4" fill="#BE123C" fill-opacity="0.4" />
+    <text x="62" y="110" text-anchor="middle" font-size="9" font-weight="700" fill="#FECDD3">IN PROGRESS</text>
+  </g>
+
+  <!-- ==================== CONNECTING ARROWS & DATA FLOWS ==================== -->
+
+  <!-- Flow 1: Client -> API Router -->
+  <path d="M 370 190 L 440 190" stroke="#38BDF8" stroke-width="2.5" fill="none" marker-end="url(#arrowBlue)" stroke-linecap="round" />
+  <rect x="375" y="168" width="58" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="404" y="181" text-anchor="middle" class="flow-text" fill="#38BDF8">REST API</text>
+
+  <!-- Flow 2: API Router -> PostgreSQL -->
+  <path d="M 765 190 L 830 190" stroke="#34D399" stroke-width="2.5" fill="none" marker-end="url(#arrowEmerald)" stroke-linecap="round" />
+  <rect x="772" y="168" width="52" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="798" y="181" text-anchor="middle" class="flow-text" fill="#34D399">Prisma</text>
+
+  <!-- Flow 3: API Router -> Redis Queue (Upsert Scheduler) -->
+  <path d="M 500 260 L 500 300 L 215 300 L 215 348" stroke="#FBBF24" stroke-width="2.2" fill="none" marker-end="url(#arrowAmber)" stroke-dasharray="6 4" stroke-linecap="round" />
+  <rect x="260" y="290" width="130" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="325" y="303" text-anchor="middle" class="flow-text" fill="#FBBF24">upsertJobScheduler()</text>
+
+  <!-- Flow 4: Redis Queue -> PingWorker (Trigger) -->
+  <path d="M 370 425 L 440 425" stroke="#FBBF24" stroke-width="2.5" fill="none" marker-end="url(#arrowAmber)" stroke-linecap="round" />
+  <rect x="378" y="405" width="55" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="405" y="418" text-anchor="middle" class="flow-text" fill="#FBBF24">Poll Job</text>
+
+  <!-- Flow 5: PingWorker -> External Target (HTTP Fetch) -->
+  <path d="M 570 515 L 570 598" stroke="#C084FC" stroke-width="2.5" fill="none" marker-end="url(#arrowPurple)" stroke-linecap="round" />
+  <rect x="580" y="545" width="125" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="642" y="558" text-anchor="middle" class="flow-text" fill="#C084FC">fetch() [10s Timeout]</text>
+
+  <!-- Flow 6: PingWorker -> PostgreSQL (Write Ping History) -->
+  <path d="M 765 425 L 800 425 L 800 270 L 830 270" stroke="#34D399" stroke-width="2.2" fill="none" marker-end="url(#arrowEmerald)" stroke-dasharray="6 4" stroke-linecap="round" />
+  <rect x="765" y="335" width="68" height="18" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="799" y="348" text-anchor="middle" class="flow-text" fill="#34D399">Log Status</text>
+
+  <!-- Flow 7: Worker to Nodemailer (Alert) -->
+  <path d="M 765 465 L 830 465" stroke="#FB7185" stroke-width="1.8" fill="none" stroke-dasharray="4 4" stroke-linecap="round" />
+  <rect x="770" y="475" width="58" height="16" rx="4" fill="#0B132B" stroke="#1E293B" />
+  <text x="799" y="487" text-anchor="middle" font-size="10" font-weight="600" fill="#FB7185">On Fail</text>
+
+  <!-- FOOTER -->
+  <g transform="translate(60, 755)">
+    <text x="0" y="0" font-family="-apple-system, sans-serif" font-size="12" fill="#64748B">WakeTheFUp Architecture Specification • Generated for Production Roadmap</text>
+    <text x="1070" y="0" text-anchor="end" font-family="ui-monospace, monospace" font-size="11" fill="#64748B">v1.0.0-alpha</text>
+  </g>
+</svg>

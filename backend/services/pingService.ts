@@ -1,83 +1,105 @@
+import { AlertEvent, type Project } from "@prisma/client";
 import { prisma } from "../config/db";
-import { Project } from "@prisma/client";
+import { transitionMonitorState } from "./monitorState";
+import { requestMonitorCheck, type SslCertificateInfo } from "./httpCheck";
+import { resolvePublicMonitorUrl } from "./urlSafety";
+import { logError } from "../logger";
 
-export default async function pingService(project: Project) {
+export type PingResult = {
+  success: boolean;
+  status: number;
+  responseTime: number;
+  checkedAt: Date;
+  consecutiveFailures: number;
+  ssl?: SslCertificateInfo;
+};
+
+export default async function pingService(project: Project): Promise<PingResult> {
   const checkedAt = new Date();
-  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const startedAt = performance.now();
+  let status = 0;
+  let success = false;
+  let ssl: SslCertificateInfo | undefined;
+
   try {
-    const start = performance.now();
-    const controller = new AbortController();
-    timeout = setTimeout(() => {
-        controller.abort();
-        }, 10000);
-    const response = await fetch(project.url, {
-      signal: controller.signal,
-    });
-      
-    clearTimeout(timeout);
-      
-    const responseTime = Math.round(performance.now() - start);
-      
-    await prisma.project.update({
-      where: {
-        id: project.id,
-      },
-      data: {
-        lastStatus: response.status,
-        lastCheckedAt: checkedAt,
-        failureCount: 0,
-      },
-    });
-
-    await prisma.pingHistory.create({
-      data: {
-        projectId: project.id,
-        status: response.status,
-        responseTime,
-        checkedAt,
-      },
-    });
-
-    return {
-      success: true,
-      status: response.status,
-      responseTime,
-      checkedAt,
-    }
+    const target = await resolvePublicMonitorUrl(project.url);
+    const check = await requestMonitorCheck(target);
+    status = check.status;
+    ssl = check.ssl;
+    success = status >= 200 && status < 300;
+  } catch (error) {
+    logError("monitor.check_request_failed", error, { projectId: project.id });
   }
-  catch (error) {
-    if (timeout) {
-      clearTimeout(timeout);
-    }
-    
-      if (error instanceof Error && error.name === "AbortError") {
-        console.log('Request timed out');
-      } else {
-      console.error(error);
-      }
-      
-      await prisma.project.update({
+
+  const responseTime = Math.max(0, Math.round(performance.now() - startedAt));
+
+  const result = await prisma.$transaction(async (tx) => {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const current = await tx.project.findUnique({
+        where: { id: project.id },
+        include: { user: { select: { email: true } } },
+      });
+
+      if (!current) return null;
+
+      const transition = transitionMonitorState(current, success);
+      const openedIncident = transition.alertEvent === "DOWN";
+      const recoveredIncident = transition.alertEvent === "RECOVERED";
+
+      const update = await tx.project.updateMany({
         where: {
-          id: project.id,
+          id: current.id,
+          failureCount: current.failureCount,
+          incidentNumber: current.incidentNumber,
+          isDown: current.isDown,
         },
         data: {
+          lastStatus: status,
           lastCheckedAt: checkedAt,
-          lastStatus: 0,
-          failureCount: {
-            increment: 1,
-          },
+          failureCount: transition.failureCount,
+          incidentNumber: transition.incidentNumber,
+          isDown: transition.isDown,
         },
       });
 
-      await prisma.pingHistory.create({
+      if (update.count === 0) continue;
+
+      await tx.pingHistory.create({
         data: {
-          projectId: project.id,
-          status: 0,
-          responseTime: 0,
+          projectId: current.id,
+          status,
+          responseTime,
           checkedAt,
         },
       });
 
-    throw error;
-  }
+      if (openedIncident || recoveredIncident) {
+        await tx.emailAlert.create({
+          data: {
+            projectId: current.id,
+            incidentNumber: transition.incidentNumber,
+            event: openedIncident ? AlertEvent.DOWN : AlertEvent.RECOVERED,
+            recipient: current.user.email,
+            projectName: current.name,
+            projectUrl: current.url,
+            status,
+            responseTime,
+          },
+        });
+      }
+
+      return { consecutiveFailures: transition.failureCount };
+    }
+
+    throw new Error(`Could not update monitoring state for project ${project.id}`);
+  }, { timeout: 15_000, maxWait: 10_000 });
+
+  return {
+    success,
+    status,
+    responseTime,
+    checkedAt,
+    consecutiveFailures: result?.consecutiveFailures ?? 0,
+    ssl,
+  };
 }

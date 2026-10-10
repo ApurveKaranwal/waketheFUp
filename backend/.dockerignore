@@ -1,0 +1,10 @@
+**/.git
+**/.gitignore
+**/node_modules
+**/dist
+**/build
+!Dockerfile
+!docker-compose.yml
+*.log
+*.md
+!.env.example

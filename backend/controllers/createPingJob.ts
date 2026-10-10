@@ -1,9 +1,12 @@
-import type { Context } from "hono";
+import type { AuthContext } from "../types";
 import { prisma } from "../config/db";
 import { createJobSchema } from "../validators/createJob";
-import { pingQueue } from "../queues/pingQueue";
+import { assertPublicMonitorUrl } from "../services/urlSafety";
+import { syncProjectScheduler } from "../services/projectScheduler";
+import { MAX_MONITORS_PER_USER } from "../config/limits";
+import { logError } from "../logger";
 
-export default async function createPingJob(c: Context) {
+export default async function createPingJob(c: AuthContext) {
   try {
     const body = await c.req.json();
     const result = createJobSchema.safeParse(body);
@@ -18,62 +21,79 @@ export default async function createPingJob(c: Context) {
     }
 
     const { name, url, intervalSeconds } = result.data;
-    const userId = "cmrf8wtxs0000x3xysq2iro6x" //using temp user id as clerk is not setup till yet.
+    const userId = c.get("userId");
 
-    const existingProject = await prisma.project.findFirst({
-      where: {
-        userId,
-        url,
-      },
-    });
-
-    if (existingProject) {
+    try {
+      await assertPublicMonitorUrl(url);
+    } catch (error) {
       return c.json({
         success: false,
-        message: "This URL has already been added."
-      }, 409
-      );
+        message: error instanceof Error ? error.message : "Monitor URL is not allowed.",
+      }, 400);
     }
-    const project = await prisma.project.create({
-      data: {
-        name,
-        url,
-        intervalSeconds,
-        userId,
-      },
+
+    const creation = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${userId} FOR UPDATE`;
+
+      const existingProject = await tx.project.findFirst({ where: { userId, url } });
+      if (existingProject) return { kind: "duplicate" as const };
+
+      const projectCount = await tx.project.count({ where: { userId } });
+      if (projectCount >= MAX_MONITORS_PER_USER) return { kind: "limit" as const };
+
+      const createdProject = await tx.project.create({
+        data: { name, url, intervalSeconds, userId },
+      });
+      const user = await tx.user.findUniqueOrThrow({
+        where: { id: userId },
+        select: { email: true },
+      });
+      await tx.emailAlert.create({
+        data: {
+          projectId: createdProject.id,
+          incidentNumber: 0,
+          event: "CREATED",
+          recipient: user.email,
+          projectName: createdProject.name,
+          projectUrl: createdProject.url,
+        },
+      });
+      return { kind: "created" as const, project: createdProject };
     });
 
-    await pingQueue.upsertJobScheduler(
-      `project-${project.id}`,
-      {
-        every: project.intervalSeconds * 1000,
-      },
-      {
-        name: "ping-project",
-        data: {
-          projectId: project.id,
-        },
-        opts: {
-          attempts: 3,
-          backoff: {
-            type: "exponential",
-            delay: 1000,
-          },
-        },
-      }
-    ); 
+    if (creation.kind === "duplicate") {
+      return c.json({ success: false, message: "This URL has already been added." }, 409);
+    }
+    if (creation.kind === "limit") {
+      return c.json({
+        success: false,
+        message: `You can have up to ${MAX_MONITORS_PER_USER} monitors on your account.`,
+        limit: MAX_MONITORS_PER_USER,
+      }, 409);
+    }
 
-    console.log(`Scheduler Created for ${project.name} (${project.intervalSeconds}s)`);
+    const project = creation.project;
+
+    let scheduleSynced = true;
+    try {
+      await syncProjectScheduler(project);
+    } catch (error) {
+      scheduleSynced = false;
+      logError("monitor.schedule_sync_failed", error, { projectId: project.id });
+    }
 
     return c.json({
       success: true,
-      message: "Project created successfully.",
+      message: scheduleSynced
+        ? "Project created successfully."
+        : "Project created; its monitoring schedule will be retried automatically.",
+      scheduleSynced,
       data: project,
     }, 201
     );
   }
   catch (error) {
-    console.error(error);
+    logError("monitor.create_failed", error);
 
     return c.json({
       success: false,

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WakeTheFUp (WTFup) - Detailed B&amp;W Architecture Diagram</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #f4f4f5;
+      color: #18181b;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #09090b;
+      margin-bottom: 4px;
+    }
+    .header p {
+      color: #71717a;
+      font-size: 14px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background-color: #09090b;
+      color: #ffffff;
+      border: 1px solid #09090b;
+    }
+    .btn-primary:hover {
+      background-color: #27272a;
+    }
+    .btn-secondary {
+      background-color: #ffffff;
+      color: #09090b;
+      border: 1px solid #e4e4e7;
+    }
+    .btn-secondary:hover {
+      background-color: #f4f4f5;
+    }
+    .diagram-container {
+      width: 100%;
+      max-width: 1200px;
+      background-color: #ffffff;
+      border: 1px solid #e4e4e7;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      padding: 10px;
+    }
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      background-color: #09090b;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>WakeTheFUp (WTFup) — System Architecture</h1>
+    <p>Detailed Technical Block Diagram (Black &amp; White Specification)</p>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn btn-primary" onclick="downloadPNG()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download High-Res PNG (LinkedIn / Docs)
+    </button>
+    <button class="btn btn-secondary" onclick="downloadSVG()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Download Vector SVG
+    </button>
+  </div>
+
+  <div class="diagram-container">
+    <svg id="bwDiagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#000000" />
+        </marker>
+        <marker id="arrowDashed" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#000000" />
+        </marker>
+      </defs>
+
+      <style>
+        .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: 800; fill: #000000; letter-spacing: -0.4px; }
+        .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 13px; fill: #555555; }
+        .section-tag { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; font-weight: 700; fill: #000000; letter-spacing: 0.8px; text-transform: uppercase; }
+        .box-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 700; fill: #000000; }
+        .box-tech { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; font-size: 11px; font-weight: 600; fill: #000000; }
+        .box-desc { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; fill: #444444; }
+        .code-text { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; fill: #222222; }
+        .schema-title { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; font-weight: 700; fill: #000000; }
+        .schema-field { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 9.5px; fill: #555555; }
+        .arrow-label { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; font-weight: 700; fill: #000000; }
+        .badge { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; font-weight: 600; fill: #000000; }
+        .footer { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 11px; fill: #777777; }
+      </style>
+
+      <rect width="1200" height="800" fill="#FFFFFF" />
+      <rect x="25" y="25" width="1150" height="750" fill="none" stroke="#D4D4D8" stroke-width="1.2" />
+      <rect x="28" y="28" width="1144" height="744" fill="none" stroke="#F4F4F5" stroke-width="1" />
+
+      <g transform="translate(50, 60)">
+        <text x="0" y="0" class="title">WakeTheFUp (WTFup) — Technical Architecture Specification</text>
+        <text x="0" y="20" class="subtitle">Distributed Asynchronous Keep-Alive &amp; Real-Time Uptime Monitoring System</text>
+        
+        <g transform="translate(760, -12)">
+          <rect x="0" y="0" width="80" height="22" rx="3" fill="#F4F4F5" stroke="#000000" stroke-width="1" />
+          <text x="40" y="15" text-anchor="middle" class="badge">Bun 1.x</text>
+          <rect x="88" y="0" width="75" height="22" rx="3" fill="#F4F4F5" stroke="#000000" stroke-width="1" />
+          <text x="125" y="15" text-anchor="middle" class="badge">Hono 4</text>
+          <rect x="171" y="0" width="85" height="22" rx="3" fill="#F4F4F5" stroke="#000000" stroke-width="1" />
+          <text x="213" y="15" text-anchor="middle" class="badge">BullMQ 5</text>
+          <rect x="264" y="0" width="75" height="22" rx="3" fill="#F4F4F5" stroke="#000000" stroke-width="1" />
+          <text x="301" y="15" text-anchor="middle" class="badge">Prisma 6</text>
+        </g>
+      </g>
+
+      <!-- 1. CLIENT LAYER -->
+      <g transform="translate(50, 115)">
+        <rect width="280" height="175" rx="4" fill="#FAFAFA" stroke="#000000" stroke-width="1.5" />
+        <text x="16" y="24" class="section-tag">[1] Client Layer</text>
+        <text x="16" y="44" class="box-title">Frontend Dashboard</text>
+        <text x="16" y="62" class="box-tech">Next.js 16 (App Router) + React 19</text>
+        <line x1="16" y1="70" x2="264" y2="70" stroke="#E4E4E7" stroke-width="1" />
+        
+        <text x="16" y="88" class="box-desc">• URL Registration &amp; Interval Picker</text>
+        <text x="26" y="104" class="code-text">Intervals: 30s | 60s | 300s</text>
+        <text x="16" y="122" class="box-desc">• Real-Time Status Toggle (Pause/Resume)</text>
+        <text x="16" y="138" class="box-desc">• Latency History Charts &amp; Uptime Logs</text>
+        <text x="16" y="154" class="box-desc">• Clerk Authentication &amp; User Sessions</text>
+      </g>
+
+      <!-- 2. API & ROUTING LAYER -->
+      <g transform="translate(420, 115)">
+        <rect width="320" height="175" rx="4" fill="#FAFAFA" stroke="#000000" stroke-width="1.5" />
+        <text x="16" y="24" class="section-tag">[2] API &amp; Validation Layer</text>
+        <text x="16" y="44" class="box-title">Hono HTTP Router</text>
+        <text x="16" y="62" class="box-tech">Bun Native Runtime • Port :3000</text>
+        <line x1="16" y1="70" x2="304" y2="70" stroke="#E4E4E7" stroke-width="1" />
+        
+        <text x="16" y="88" class="box-desc">• <tspan font-weight="700">Routes (/ping):</tspan> POST, GET, PATCH, DELETE</text>
+        <text x="16" y="106" class="box-desc">• <tspan font-weight="700">Zod Schema Validation:</tspan></text>
+        <text x="26" y="122" class="code-text">name (3-50 chars), valid URL, interval in [30,60,300]</text>
+        <text x="16" y="140" class="box-desc">• URL Deduplication &amp; Project Ownership Check</text>
+        <text x="16" y="156" class="box-desc">• Dispatches scheduler changes to BullMQ</text>
+      </g>
+
+      <!-- 3. DATABASE & PERSISTENCE -->
+      <g transform="translate(830, 115)">
+        <rect width="320" height="270" rx="4" fill="#FAFAFA" stroke="#000000" stroke-width="1.5" />
+        <text x="16" y="24" class="section-tag">[3] Persistent Storage</text>
+        <text x="16" y="44" class="box-title">PostgreSQL Database</text>
+        <text x="16" y="62" class="box-tech">Prisma ORM 6.x</text>
+        <line x1="16" y1="70" x2="304" y2="70" stroke="#E4E4E7" stroke-width="1" />
+        
+        <rect x="14" y="78" width="292" height="46" rx="2" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1" />
+        <text x="22" y="93" class="schema-title">Model User</text>
+        <text x="22" y="108" class="schema-field">id (cuid), clerkId [unique], name, email [unique]</text>
+
+        <rect x="14" y="132" width="292" height="60" rx="2" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1" />
+        <text x="22" y="147" class="schema-title">Model Project <tspan font-weight="normal" fill="#71717A">@@index([userId])</tspan></text>
+        <text x="22" y="161" class="schema-field">id, name, url, intervalSeconds, enabled [bool]</text>
+        <text x="22" y="174" class="schema-field">lastStatus [int], lastCheckedAt, failureCount [int]</text>
+
+        <rect x="14" y="200" width="292" height="56" rx="2" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1" />
+        <text x="22" y="215" class="schema-title">Model PingHistory <tspan font-weight="normal" fill="#71717A">@@index([projectId])</tspan></text>
+        <text x="22" y="229" class="schema-field">id, status [int], responseTime [ms], checkedAt</text>
+        <text x="22" y="242" class="schema-field">onDelete: Cascade (cleans logs when project deleted)</text>
+      </g>
+
+      <!-- 4. QUEUE & SCHEDULING LAYER -->
+      <g transform="translate(50, 415)">
+        <rect width="280" height="190" rx="4" fill="#FAFAFA" stroke="#000000" stroke-width="1.5" />
+        <text x="16" y="24" class="section-tag">[4] Distributed Queue &amp; Timer</text>
+        <text x="16" y="44" class="box-title">BullMQ Repeatable Scheduler</text>
+        <text x="16" y="62" class="box-tech">Redis Key-Value Store (IORedis)</text>
+        <line x1="16" y1="70" x2="264" y2="70" stroke="#E4E4E7" stroke-width="1" />
+        
+        <text x="16" y="88" class="box-desc">• Queue Name: <tspan font-weight="700">"pingQueue"</tspan></text>
+        <text x="16" y="106" class="box-desc">• Dynamic Scheduler Registration:</text>
+        <text x="26" y="122" class="code-text">pingQueue.upsertJobScheduler(`project-${id}`)</text>
+        <text x="16" y="140" class="box-desc">• Interval Execution: <tspan class="code-text">every: intervalSeconds * 1000</tspan></text>
+        <text x="16" y="156" class="box-desc">• Retries: <tspan font-weight="700">3 attempts</tspan> with exponential backoff</text>
+        <text x="16" y="172" class="box-desc">• Clean teardown via <tspan class="code-text">removeJobScheduler()</tspan></text>
+      </g>
+
+      <!-- 5. WORKER & PING ENGINE -->
+      <g transform="translate(420, 415)">
+        <rect width="320" height="190" rx="4" fill="#FAFAFA" stroke="#000000" stroke-width="1.5" />
+        <text x="16" y="24" class="section-tag">[5] Background Execution</text>
+        <text x="16" y="44" class="box-title">PingWorker &amp; PingService</text>
+        <text x="16" y="62" class="box-tech">Async Worker Engine • Bun Runtime</text>
+        <line x1="16" y1="70" x2="304" y2="70" stroke="#E4E4E7" stroke-width="1" />
+        
+        <text x="16" y="88" class="box-desc">• Consumes jobs from <tspan font-weight="700">"pingQueue"</tspan> asynchronously</text>
+        <text x="16" y="104" class="box-desc">• Validates project existence &amp; <tspan class="code-text">enabled === true</tspan></text>
+        <text x="16" y="122" class="box-desc">• <tspan font-weight="700">AbortController Circuit Breaker:</tspan></text>
+        <text x="26" y="138" class="code-text">10,000ms strict timeout (aborts hanging sockets)</text>
+        <text x="16" y="156" class="box-desc">• High-precision latency: <tspan class="code-text">performance.now()</tspan></text>
+        <text x="16" y="172" class="box-desc">• State updater: resets / increments <tspan class="code-text">failureCount</tspan></text>
+      </g>
+
+      <!-- 6. EXTERNAL TARGET ENDPOINTS -->
+      <g transform="translate(830, 415)">
+        <rect width="320" height="190" rx="4" fill="#FAFAFA" stroke="#000000" stroke-width="1.5" />
+        <text x="16" y="24" class="section-tag">[6] Target Endpoints</text>
+        <text x="16" y="44" class="box-title">Monitored Web Services</text>
+        <text x="16" y="62" class="box-tech">External User APIs &amp; Servers</text>
+        <line x1="16" y1="70" x2="304" y2="70" stroke="#E4E4E7" stroke-width="1" />
+        
+        <text x="16" y="88" class="box-desc">• Cloud platforms: Render, Railway, Fly.io, Glitch</text>
+        <text x="16" y="106" class="box-desc">• Keep-Alive effect: Prevents idle instance sleeping</text>
+        <text x="16" y="122" class="box-desc">• Eliminates 50s+ cold-start startup penalty</text>
+        <text x="16" y="140" class="box-desc">• Expected HTTP Status Responses:</text>
+        <text x="26" y="156" class="code-text">200 OK (Healthy) | 4xx / 5xx | 0 (Timeout / Error)</text>
+        <text x="16" y="174" class="box-desc">• Continuous 24/7 heartbeat execution</text>
+      </g>
+
+      <!-- PLANNED ALERT MODULE -->
+      <g transform="translate(420, 640)">
+        <rect width="320" height="90" rx="4" fill="#FFFFFF" stroke="#000000" stroke-width="1.2" stroke-dasharray="4 3" />
+        <text x="16" y="22" class="section-tag">[PLANNED] Alert Dispatcher</text>
+        <text x="16" y="40" class="box-title">Nodemailer Outage Alerts</text>
+        <text x="16" y="58" class="box-desc">• Triggered when status != 200 or on timeout</text>
+        <text x="16" y="74" class="box-desc">• Sends instant incident email notification to user</text>
+      </g>
+
+      <!-- FLOWS -->
+      <path d="M 330 200 L 410 200" stroke="#000000" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+      <rect x="340" y="180" width="60" height="18" fill="#FFFFFF" stroke="#000000" stroke-width="1" rx="2" />
+      <text x="370" y="193" text-anchor="middle" class="arrow-label">HTTP REST</text>
+
+      <path d="M 740 200 L 820 200" stroke="#000000" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+      <rect x="750" y="180" width="60" height="18" fill="#FFFFFF" stroke="#000000" stroke-width="1" rx="2" />
+      <text x="780" y="193" text-anchor="middle" class="arrow-label">CRUD Sync</text>
+
+      <path d="M 520 290 L 520 340 L 190 340 L 190 405" stroke="#000000" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+      <rect x="250" y="331" width="180" height="18" fill="#FFFFFF" stroke="#000000" stroke-width="1" rx="2" />
+      <text x="340" y="344" text-anchor="middle" class="arrow-label">upsertJobScheduler()</text>
+
+      <path d="M 330 510 L 410 510" stroke="#000000" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+      <rect x="342" y="490" width="56" height="18" fill="#FFFFFF" stroke="#000000" stroke-width="1" rx="2" />
+      <text x="370" y="503" text-anchor="middle" class="arrow-label">Poll Job</text>
+
+      <path d="M 740 510 L 820 510" stroke="#000000" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+      <rect x="748" y="490" width="64" height="18" fill="#FFFFFF" stroke="#000000" stroke-width="1" rx="2" />
+      <text x="780" y="503" text-anchor="middle" class="arrow-label">fetch() 10s</text>
+
+      <path d="M 680 415 L 680 340 L 840 340 L 840 395" stroke="#000000" stroke-width="1.5" stroke-dasharray="4 3" fill="none" marker-end="url(#arrowDashed)" />
+      <rect x="695" y="331" width="130" height="18" fill="#FFFFFF" stroke="#000000" stroke-width="1" rx="2" />
+      <text x="760" y="344" text-anchor="middle" class="arrow-label">Log Latency &amp; Status</text>
+
+      <path d="M 580 605 L 580 630" stroke="#000000" stroke-width="1.2" stroke-dasharray="3 3" fill="none" marker-end="url(#arrowDashed)" />
+      <rect x="588" y="610" width="48" height="15" fill="#FFFFFF" stroke="#000000" stroke-width="0.8" rx="2" />
+      <text x="612" y="621" text-anchor="middle" font-size="9" font-family="monospace" font-weight="700">On Fail</text>
+
+      <g transform="translate(50, 755)">
+        <text x="0" y="0" class="footer">WakeTheFUp (WTFup) System Architecture • Clean Engineering Specification</text>
+        <text x="1100" y="0" text-anchor="end" class="footer">v1.0.0-alpha • Bun / Hono / BullMQ / Redis / PostgreSQL / Prisma</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="toast" id="toast">Downloaded successfully!</div>
+
+  <script>
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function downloadSVG() {
+      const svg = document.getElementById('bwDiagram');
+      const serializer = new XMLSerializer();
+      let source = serializer.serializeToString(svg);
+      source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+      const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "WakeTheFUp_Detailed_Architecture.svg";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast("SVG Downloaded!");
+    }
+
+    function downloadPNG() {
+      const svg = document.getElementById('bwDiagram');
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(svg);
+      const canvas = document.createElement("canvas");
+      const scale = 2; // 2400x1600 ultra high-res
+      canvas.width = 1200 * scale;
+      canvas.height = 800 * scale;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(scale, scale);
+
+      const img = new Image();
+      const svgBlob = new Blob([svgStr], { type: "image/svg+xml;charset=utf-8" });
+      const URL = window.URL || window.webkitURL || window;
+      const blobURL = URL.createObjectURL(svgBlob);
+
+      img.onload = function () {
+        ctx.drawImage(img, 0, 0);
+        const pngURL = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.href = pngURL;
+        downloadLink.download = "WakeTheFUp_Detailed_Architecture.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        URL.revokeObjectURL(blobURL);
+        showToast("High-Res PNG Downloaded!");
+      };
+
+      img.src = blobURL;
+    }
+  </script>
+</body>
+</html>

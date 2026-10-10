@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows"]
 }
 
 datasource db {
@@ -7,44 +8,84 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AlertEvent {
+  CREATED
+  DOWN
+  RECOVERED
+}
+
 model User {
-id String @id @default(cuid())
-clerkId String @unique
-name String 
-email String @unique
-
-projects Project[]
-
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
+  id        String    @id @default(cuid())
+  clerkId   String    @unique
+  name      String
+  email     String    @unique
+  projects  Project[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Project {
-id String @id @default(cuid()) //cuid generates ids like cmdu5jv6r0000t8l5u3m9k7f2
-name String
-url String
-lastStatus Int?
-lastCheckedAt DateTime?
-failureCount Int @default(0)
-userId String
-enabled Boolean @default(true)
-user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-intervalSeconds Int
-history PingHistory[]
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt //Whenever this row is updated, automatically set this field to the current time.
+  id              String        @id @default(cuid())
+  name            String
+  url             String
+  lastStatus      Int?
+  lastCheckedAt   DateTime?
+  failureCount    Int           @default(0)
+  incidentNumber  Int           @default(0)
+  isDown          Boolean       @default(false)
+  userId          String
+  enabled         Boolean       @default(true)
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  intervalSeconds Int
+  history         PingHistory[]
+  alerts          EmailAlert[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-@@index([userId])
+  @@index([userId])
+  @@index([enabled, id])
 }
 
-model PingHistory{
-id String @id @default(cuid())
-status Int
-responseTime Int
+model PingHistory {
+  id           String   @id @default(cuid())
+  status       Int
+  responseTime Int
+  checkedAt    DateTime @default(now())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-checkedAt DateTime @default(now())
+  @@index([projectId, checkedAt])
+  @@index([checkedAt, id])
+}
 
-projectId String
-project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-@@index([projectId])
+model EmailAlert {
+  id             String     @id @default(cuid())
+  projectId      String
+  project        Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  event          AlertEvent
+  incidentNumber Int
+  recipient      String
+  projectName    String
+  projectUrl     String
+  status         Int?
+  responseTime   Int?
+  attempts       Int        @default(0)
+  nextAttemptAt  DateTime   @default(now())
+  sentAt         DateTime?
+  lastError      String?
+  createdAt      DateTime   @default(now())
+
+  @@unique([projectId, incidentNumber, event])
+  @@index([sentAt, nextAttemptAt])
+}
+
+model AccountDeletion {
+  clerkId       String    @id
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now())
+  completedAt   DateTime?
+  lastError     String?
+  requestedAt   DateTime  @default(now())
+
+  @@index([completedAt, nextAttemptAt])
 }

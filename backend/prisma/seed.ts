@@ -2,31 +2,30 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      email: "test@example.com"
-    },
-  });
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("The development seed is disabled in production.");
+  }
 
-  if (existingUser) {
-    console.log("Dummy user already exists.");
+  const clerkId = process.env.DEV_CLERK_USER_ID;
+  const email = process.env.DEV_USER_EMAIL;
+  if (!clerkId || !email) {
+    console.info("Skipping development seed: set DEV_CLERK_USER_ID and DEV_USER_EMAIL to create a local account.");
     return;
   }
 
-  const user = await prisma.user.create({
-    data: {
-      clerkId: "temp-clerk-id",
-      name: "Test User",
-      email: "test@example.com",
-    },
+  await prisma.user.upsert({
+    where: { clerkId },
+    create: { clerkId, email, name: process.env.DEV_USER_NAME || email },
+    update: { email, name: process.env.DEV_USER_NAME || email },
   });
-
-  console.log("Dummy user Created:");
-  console.log(user);
+  console.info("Development account seed complete.");
 }
 
 main()
-  .catch(console.error)
+  .catch((error) => {
+    console.error("Development seed failed:", error instanceof Error ? error.name : "UnknownError");
+    process.exitCode = 1;
+  })
   .finally(async () => {
     await prisma.$disconnect();
   });

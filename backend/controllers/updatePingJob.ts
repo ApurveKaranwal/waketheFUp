@@ -1,11 +1,13 @@
-import type { Context } from "hono";
+import type { AuthContext } from "../types";
 import { prisma } from "../config/db";
 import { updatePingJobSchema } from "../validators/updatePingJob";
-import { pingQueue } from "../queues/pingQueue";
+import { assertPublicMonitorUrl } from "../services/urlSafety";
+import { syncProjectScheduler } from "../services/projectScheduler";
+import { logError } from "../logger";
 
-export default async function updatePingJob(c: Context) {
+export default async function updatePingJob(c: AuthContext) {
   try {
-    const userId = "cmrf8wtxs0000x3xysq2iro6x";
+    const userId = c.get("userId");
     const projectId = c.req.param("id");
     const body = await c.req.json();
     const parsed = updatePingJobSchema.safeParse(body);
@@ -35,50 +37,70 @@ export default async function updatePingJob(c: Context) {
       );
     }
 
-    const updatedProject = await prisma.project.update({
-      where: {
-        id: projectId,
-      },
-      data: parsed.data,
+    if (parsed.data.url) {
+      try {
+        await assertPublicMonitorUrl(parsed.data.url);
+      } catch (error) {
+        return c.json({
+          success: false,
+          message: error instanceof Error ? error.message : "Monitor URL is not allowed.",
+        }, 400);
+      }
+
+    }
+
+    const updateResult = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT "id" FROM "User" WHERE "id" = ${userId} FOR UPDATE`;
+      const currentProject = await tx.project.findFirst({
+        where: { id: projectId, userId },
+        select: { id: true },
+      });
+      if (!currentProject) return { kind: "not-found" as const };
+
+      if (parsed.data.url) {
+        const duplicate = await tx.project.findFirst({
+          where: { userId, url: parsed.data.url, id: { not: projectId } },
+          select: { id: true },
+        });
+        if (duplicate) return { kind: "duplicate" as const };
+      }
+
+      const updatedProject = await tx.project.update({
+        where: { id: projectId, userId },
+        data: parsed.data,
+      });
+      return { kind: "updated" as const, project: updatedProject };
     });
 
-    if (updatedProject.enabled) {
-      await pingQueue.upsertJobScheduler(
-        `project-${updatedProject.id}`,
-        {
-          every: updatedProject.intervalSeconds * 1000,
-        },
-        {
-          name: "ping-project",
-          data: {
-            projectId: updatedProject.id,
-          },
-          opts: {
-            attempts: 3,
-            backoff: {
-              type: "exponential",
-              delay: 1000,
-            },
-          },
-        }
-      );
+    if (updateResult.kind === "not-found") {
+      return c.json({ success: false, message: "Project not found." }, 404);
     }
-    else {
-      await pingQueue.removeJobScheduler(
-        `project-${updatedProject.id}`
-      );
+    if (updateResult.kind === "duplicate") {
+      return c.json({ success: false, message: "This URL is already used by another monitor." }, 409);
+    }
+    const updatedProject = updateResult.project;
+
+    let scheduleSynced = true;
+    try {
+      await syncProjectScheduler(updatedProject);
+    } catch (error) {
+      scheduleSynced = false;
+      logError("monitor.update_schedule_sync_failed", error, { projectId: updatedProject.id });
     }
 
     return c.json({
       success: true,
-      message: "Project updated successfully.",
+      message: scheduleSynced
+        ? "Project updated successfully."
+        : "Project updated; its monitoring schedule will be retried automatically.",
+      scheduleSynced,
       data: updatedProject,
     },
       200
     );
   }
   catch (err) {
-    console.error(err);
+    logError("monitor.update_failed", err);
 
     return c.json({
       success: false,
