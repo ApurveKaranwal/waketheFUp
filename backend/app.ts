@@ -13,17 +13,33 @@ import { logError } from "./logger";
 const defaultOrigins = "http://localhost:3000,http://127.0.0.1:3000";
 
 function isOriginAllowed(origin: string): boolean {
+  if (!origin) return false;
   const cleanOrigin = origin.trim().replace(/\/+$/, "").toLowerCase();
+
+  // Allow custom domain and preview branches automatically
+  try {
+    const url = new URL(cleanOrigin);
+    if (
+      url.hostname === "wtf.apurve.xyz" ||
+      url.hostname.endsWith(".apurve.xyz") ||
+      url.hostname.endsWith(".vercel.app") ||
+      url.hostname === "localhost" ||
+      url.hostname === "127.0.0.1"
+    ) {
+      return true;
+    }
+  } catch {}
+
   const configured = (process.env.CORS_ORIGINS || defaultOrigins)
     .split(",")
-    .map((v) => v.trim().replace(/\/+$/, "").toLowerCase())
+    .map((v) => v.trim().replace(/^["']|["']$/g, "").replace(/\/+$/, "").toLowerCase())
     .filter(Boolean);
   return configured.includes(cleanOrigin);
 }
 
 const app = new Hono();
 
-app.use("/*", secureHeaders());
+app.use("/*", secureHeaders({ crossOriginResourcePolicy: "cross-origin" }));
 app.use("/*", bodyLimit({ maxSize: 16 * 1024 }));
 app.use(
   "/*",
@@ -33,7 +49,8 @@ app.use(
       return isOriginAllowed(origin) ? origin : null;
     },
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
+    allowHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
+    maxAge: 86400,
   })
 );
 

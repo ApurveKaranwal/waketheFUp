@@ -50,7 +50,7 @@ export function isBullMqRedisVersionSupported(serverInfo: string): boolean {
 
 function hasValidProductionOrigins(value: string | undefined): boolean {
   if (!value) return false;
-  const origins = value.split(",").map((origin) => origin.trim());
+  const origins = value.split(",").map((origin) => origin.trim().replace(/^["']|["']$/g, ""));
   if (origins.some((origin) => !origin || origin === "*")) return false;
   return origins.every((origin) => {
     try {
