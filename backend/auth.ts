@@ -19,16 +19,13 @@ export const requireUser = createMiddleware<AuthEnv>(
 
     let clerkId: string;
     try {
-      const authorizedParties = (process.env.CORS_ORIGINS || "http://localhost:3000")
-        .split(",")
-        .map((value) => value.trim())
-        .filter(Boolean);
-      const claims = await verifyToken(token, { secretKey, authorizedParties });
+      const claims = await verifyToken(token, { secretKey });
       if (typeof claims.sub !== "string" || claims.sub.length === 0) {
         return c.json({ success: false, message: "Invalid authentication token." }, 401);
       }
       clerkId = claims.sub;
-    } catch {
+    } catch (error) {
+      logError("auth.token_verification_failed", error);
       return c.json({ success: false, message: "Invalid or expired authentication token." }, 401);
     }
 
