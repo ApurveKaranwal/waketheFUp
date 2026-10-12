@@ -1,0 +1,23 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    # Runs every 10 minutes to prevent Render free-tier from idling to sleep
+    - cron: "*/10 * * * *"
+  workflow_dispatch: # Allows manual run anytime from GitHub Actions tab
+
+jobs:
+  ping:
+    name: Ping Health Endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send keep-alive HTTP GET
+        run: |
+          URL="${{ secrets.RENDER_API_URL }}"
+          if [ -z "$URL" ]; then
+            echo "RENDER_API_URL secret is not set yet. Once your Render service is deployed, set RENDER_API_URL under GitHub Repo Settings -> Secrets and variables -> Actions."
+            exit 0
+          fi
+          echo "Pinging $URL/health/live ..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL/health/live")
+          echo "Response code: $STATUS"
