@@ -11,11 +11,15 @@ import deleteAccount from "./controllers/deleteAccount";
 import { logError } from "./logger";
 
 const defaultOrigins = "http://localhost:3000,http://127.0.0.1:3000";
-const parsedOrigins = (process.env.CORS_ORIGINS || defaultOrigins)
-  .split(",")
-  .map((value) => value.trim());
-const allowedOriginsSet = new Set(parsedOrigins);
-const defaultAllowedOrigin = parsedOrigins[0] || "http://localhost:3000";
+
+function isOriginAllowed(origin: string): boolean {
+  const cleanOrigin = origin.trim().replace(/\/+$/, "").toLowerCase();
+  const configured = (process.env.CORS_ORIGINS || defaultOrigins)
+    .split(",")
+    .map((v) => v.trim().replace(/\/+$/, "").toLowerCase())
+    .filter(Boolean);
+  return configured.includes(cleanOrigin);
+}
 
 const app = new Hono();
 
@@ -25,8 +29,8 @@ app.use(
   "/*",
   cors({
     origin: (origin) => {
-      if (!origin) return defaultAllowedOrigin;
-      return allowedOriginsSet.has(origin) ? origin : defaultAllowedOrigin;
+      if (!origin) return (process.env.CORS_ORIGINS || defaultOrigins).split(",")[0].trim();
+      return isOriginAllowed(origin) ? origin : null;
     },
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
