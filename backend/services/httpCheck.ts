@@ -17,6 +17,9 @@ export type MonitorCheckResult = {
   ssl?: SslCertificateInfo;
 };
 
+const httpAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 15_000, maxSockets: 100 });
+const httpsAgent = new https.Agent({ keepAlive: true, keepAliveMsecs: 15_000, maxSockets: 100 });
+
 export function requestMonitorCheck(
   target: ResolvedMonitorTarget,
   timeoutMs = MONITOR_TIMEOUT_MS,
@@ -65,7 +68,7 @@ export function requestMonitorCheck(
         }
       }
 
-      response.destroy();
+      response.resume();
       resolve({ status, ssl });
     };
 
@@ -73,9 +76,10 @@ export function requestMonitorCheck(
     const request = url.protocol === "https:"
       ? https.request(url, {
           lookup: pinnedLookup,
+          agent: httpsAgent,
           servername: isIP(hostname) ? undefined : hostname,
         }, handleResponse)
-      : http.request(url, { lookup: pinnedLookup }, handleResponse);
+      : http.request(url, { lookup: pinnedLookup, agent: httpAgent }, handleResponse);
 
     timeout = setTimeout(() => {
       if (settled) return;

@@ -33,6 +33,22 @@ export async function syncProjectScheduler(
 }
 
 export async function reconcileProjectSchedulers(): Promise<void> {
+  // Fetch existing schedulers first to avoid thundering-herd writes every 60s
+  const schedulers = [];
+  const pageSize = 250;
+  for (let start = 0; ; start += pageSize) {
+    const page = await pingQueue.getJobSchedulers(start, start + pageSize - 1, true);
+    schedulers.push(...page);
+    if (page.length < pageSize) break;
+  }
+
+  const existingSchedulersMap = new Map<string, number>();
+  for (const s of schedulers) {
+    if (s.key && s.every) {
+      existingSchedulersMap.set(s.key, Number(s.every));
+    }
+  }
+
   const activeIds = new Set<string>();
   let offset = 0;
 
@@ -46,21 +62,27 @@ export async function reconcileProjectSchedulers(): Promise<void> {
     });
     if (projects.length === 0) break;
 
-    for (const project of projects) activeIds.add(project.id);
-    for (let offset = 0; offset < projects.length; offset += 25) {
-      await Promise.all(projects.slice(offset, offset + 25).map(syncProjectScheduler));
+    const toSync: typeof projects = [];
+    for (const project of projects) {
+      activeIds.add(project.id);
+      const schedulerKey = `${PROJECT_SCHEDULER_PREFIX}${project.id}`;
+      const existingInterval = existingSchedulersMap.get(schedulerKey);
+      const expectedInterval = project.intervalSeconds * 1_000;
+
+      // Only upsert if missing or interval changed
+      if (existingInterval !== expectedInterval) {
+        toSync.push(project);
+      }
+    }
+
+    if (toSync.length > 0) {
+      for (let i = 0; i < toSync.length; i += 25) {
+        await Promise.all(toSync.slice(i, i + 25).map(syncProjectScheduler));
+      }
     }
 
     offset += projects.length;
     if (projects.length < SCHEDULER_BATCH_SIZE) break;
-  }
-
-  const schedulers = [];
-  const pageSize = 250;
-  for (let start = 0; ; start += pageSize) {
-    const page = await pingQueue.getJobSchedulers(start, start + pageSize - 1, true);
-    schedulers.push(...page);
-    if (page.length < pageSize) break;
   }
 
   const staleSchedulerIds = findStaleProjectSchedulerIds(

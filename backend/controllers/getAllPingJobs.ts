@@ -15,6 +15,13 @@ export default async function getAllPingJobs(c: AuthContext) {
       },
       include: {
         history: {
+          select: {
+            id: true,
+            status: true,
+            responseTime: true,
+            checkedAt: true,
+            projectId: true,
+          },
           orderBy: {
             checkedAt: "desc",
           },

@@ -8,11 +8,13 @@ import { ToastProvider } from "@/components/Toast";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -46,7 +48,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="min-h-screen bg-white text-black dark:bg-black dark:text-white flex flex-col font-sans transition-colors">
+      <body className="min-h-screen bg-white text-black dark:bg-black dark:text-white flex flex-col font-sans">
         <ToastProvider>
           <Navbar />
           <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">

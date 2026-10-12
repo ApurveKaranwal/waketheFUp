@@ -8,6 +8,14 @@ import { getReadinessReport } from "./services/readiness";
 import { metricsMiddleware } from "./middleware/metrics";
 import pingRouter from "./routes/ping";
 import deleteAccount from "./controllers/deleteAccount";
+import { logError } from "./logger";
+
+const defaultOrigins = "http://localhost:3000,http://127.0.0.1:3000";
+const parsedOrigins = (process.env.CORS_ORIGINS || defaultOrigins)
+  .split(",")
+  .map((value) => value.trim());
+const allowedOriginsSet = new Set(parsedOrigins);
+const defaultAllowedOrigin = parsedOrigins[0] || "http://localhost:3000";
 
 const app = new Hono();
 
@@ -17,12 +25,8 @@ app.use(
   "/*",
   cors({
     origin: (origin) => {
-      const defaultOrigins = "http://localhost:3000,http://127.0.0.1:3000";
-      const allowedOrigins = (process.env.CORS_ORIGINS || defaultOrigins)
-        .split(",")
-        .map((value) => value.trim());
-      if (!origin) return allowedOrigins[0];
-      return allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+      if (!origin) return defaultAllowedOrigin;
+      return allowedOriginsSet.has(origin) ? origin : defaultAllowedOrigin;
     },
     allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
@@ -30,7 +34,6 @@ app.use(
 );
 
 app.onError((err, c) => {
-  const { logError } = require("./logger");
   logError("api.unhandled_error", err);
   return c.json({ success: false, message: err.message || "Internal server error" }, 500);
 });

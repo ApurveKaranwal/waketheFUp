@@ -10,6 +10,7 @@
   --border: #e5e5e5;
   --muted: #f4f4f5;
   --muted-foreground: #71717a;
+  scrollbar-gutter: stable;
 }
 
 .dark {
@@ -29,7 +30,6 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 /* Ultra minimal scrollbar */

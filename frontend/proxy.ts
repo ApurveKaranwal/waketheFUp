@@ -1,14 +1,14 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-function isPublicRoute(pathname: string): boolean {
-  return pathname === "/" ||
-    pathname === "/sign-in" || pathname.startsWith("/sign-in/") ||
-    pathname === "/sign-up" || pathname.startsWith("/sign-up/");
-}
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/sign-in(.*)",
+  "/sign-up(.*)",
+]);
 
 export default clerkMiddleware(async (auth, request) => {
   // Keep public pages usable for local development without Clerk credentials.
-  if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && !isPublicRoute(request.nextUrl.pathname)) {
+  if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && !isPublicRoute(request)) {
     await auth.protect();
   }
 });

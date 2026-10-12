@@ -45,14 +45,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const toast = {
+  const toast = React.useMemo(() => ({
     success: (msg: string) => addToast(msg, "success"),
     error: (msg: string) => addToast(msg, "error"),
     info: (msg: string) => addToast(msg, "info"),
-  };
+  }), [addToast]);
+
+  const contextValue = React.useMemo(() => ({ toast }), [toast]);
 
   return (
-    <ToastContext.Provider value={{ toast }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       {/* Toast Container */}
       <div

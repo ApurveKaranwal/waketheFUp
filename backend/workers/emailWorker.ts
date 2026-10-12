@@ -29,17 +29,21 @@ async function dispatchPendingAlerts() {
     select: { id: true },
   });
 
-  await Promise.all(alerts.map((alert) => emailQueue.add(
-    "send-email-alert",
-    { alertId: alert.id },
-    {
-      jobId: alert.id,
-      attempts: 5,
-      backoff: { type: "exponential", delay: 5_000 },
-      removeOnComplete: 1_000,
-      removeOnFail: true,
-    },
-  )));
+  if (alerts.length === 0) return;
+
+  await emailQueue.addBulk(
+    alerts.map((alert) => ({
+      name: "send-email-alert",
+      data: { alertId: alert.id },
+      opts: {
+        jobId: alert.id,
+        attempts: 5,
+        backoff: { type: "exponential", delay: 5_000 },
+        removeOnComplete: 1_000,
+        removeOnFail: true,
+      },
+    }))
+  );
 }
 
 async function sendPendingAlert(alertId: string) {

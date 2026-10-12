@@ -37,7 +37,6 @@ export default async function pingService(project: Project): Promise<PingResult>
     for (let attempt = 0; attempt < 5; attempt += 1) {
       const current = await tx.project.findUnique({
         where: { id: project.id },
-        include: { user: { select: { email: true } } },
       });
 
       if (!current) return null;
@@ -74,18 +73,25 @@ export default async function pingService(project: Project): Promise<PingResult>
       });
 
       if (openedIncident || recoveredIncident) {
-        await tx.emailAlert.create({
-          data: {
-            projectId: current.id,
-            incidentNumber: transition.incidentNumber,
-            event: openedIncident ? AlertEvent.DOWN : AlertEvent.RECOVERED,
-            recipient: current.user.email,
-            projectName: current.name,
-            projectUrl: current.url,
-            status,
-            responseTime,
-          },
+        const user = await tx.user.findUnique({
+          where: { id: current.userId },
+          select: { email: true },
         });
+
+        if (user?.email) {
+          await tx.emailAlert.create({
+            data: {
+              projectId: current.id,
+              incidentNumber: transition.incidentNumber,
+              event: openedIncident ? AlertEvent.DOWN : AlertEvent.RECOVERED,
+              recipient: user.email,
+              projectName: current.name,
+              projectUrl: current.url,
+              status,
+              responseTime,
+            },
+          });
+        }
       }
 
       return { consecutiveFailures: transition.failureCount };

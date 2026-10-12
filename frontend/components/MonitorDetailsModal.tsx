@@ -37,8 +37,7 @@ export default function MonitorDetailsModal({
 
   useEffect(() => {
     if (!projectId) return;
-    const loadTimer = setTimeout(() => { void loadData(projectId); }, 0);
-    return () => clearTimeout(loadTimer);
+    void loadData(projectId);
   }, [projectId, loadData]);
 
   if (!projectId) return null;

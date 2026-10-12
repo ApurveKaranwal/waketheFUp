@@ -43,6 +43,7 @@ model Project {
   updatedAt       DateTime      @updatedAt
 
   @@index([userId])
+  @@index([userId, createdAt])
   @@index([enabled, id])
 }
 
@@ -77,6 +78,7 @@ model EmailAlert {
 
   @@unique([projectId, incidentNumber, event])
   @@index([sentAt, nextAttemptAt])
+  @@index([sentAt, nextAttemptAt, createdAt])
 }
 
 model AccountDeletion {
