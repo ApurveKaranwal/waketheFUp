@@ -13,8 +13,8 @@ function getRetentionDays(name: string, fallback: number): number {
 }
 
 export function validateRetentionConfig(): void {
-  getRetentionDays("PING_HISTORY_RETENTION_DAYS", 90);
-  getRetentionDays("EMAIL_ALERT_RETENTION_DAYS", 90);
+  getRetentionDays("PING_HISTORY_RETENTION_DAYS", 14);
+  getRetentionDays("EMAIL_ALERT_RETENTION_DAYS", 14);
 }
 
 export function retentionCutoff(now: Date, days: number): Date {
@@ -83,8 +83,8 @@ async function deleteCompletedAccountTombstones(cutoff: Date): Promise<number> {
 
 export async function cleanupRetainedData(now = new Date()) {
   validateRetentionConfig();
-  const historyDays = getRetentionDays("PING_HISTORY_RETENTION_DAYS", 90);
-  const alertDays = getRetentionDays("EMAIL_ALERT_RETENTION_DAYS", 90);
+  const historyDays = getRetentionDays("PING_HISTORY_RETENTION_DAYS", 14);
+  const alertDays = getRetentionDays("EMAIL_ALERT_RETENTION_DAYS", 14);
   const [historyDeleted, alertsDeleted, accountDeletionsDeleted] = await Promise.all([
     deleteOldHistory(retentionCutoff(now, historyDays)),
     deleteSentAlerts(retentionCutoff(now, alertDays)),

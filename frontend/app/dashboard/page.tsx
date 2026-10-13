@@ -255,14 +255,14 @@ export default function DashboardPage() {
     return () => clearTimeout(initialLoad);
   }, [loadMonitors]);
 
-  // Polling every 10 seconds for real-time monitoring updates (paused when tab hidden)
+  // Polling every 15 seconds for real-time monitoring updates (paused when tab hidden)
   useEffect(() => {
     if (!autoRefresh) return;
     const interval = setInterval(() => {
       if (typeof document !== "undefined" && document.visibilityState === "visible") {
         void loadMonitors(true);
       }
-    }, 10000);
+    }, 15000);
     return () => clearInterval(interval);
   }, [autoRefresh, loadMonitors]);
 
@@ -377,7 +377,7 @@ export default function DashboardPage() {
                 : "border-zinc-400 text-zinc-500"
             }`}
           >
-            {autoRefresh ? "• Auto-Refresh (10s)" : "Auto-Refresh OFF"}
+            {autoRefresh ? "• Auto-Refresh (15s)" : "Auto-Refresh OFF"}
           </button>
 
           <button

@@ -25,8 +25,8 @@ export async function syncProjectScheduler(
       opts: {
         attempts: 3,
         backoff: { type: "exponential", delay: 1_000 },
-        removeOnComplete: 1_000,
-        removeOnFail: 1_000,
+        removeOnComplete: { count: 20, age: 1800 },
+        removeOnFail: { count: 50, age: 86400 },
       },
     },
   );

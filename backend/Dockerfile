@@ -20,4 +20,4 @@ EXPOSE 4000
 ENV NODE_ENV=production
 ENV PORT=4000
 
-CMD ["bun", "run", "backend/index.ts"]
+CMD ["bun", "run", "--smol", "backend/index.ts"]

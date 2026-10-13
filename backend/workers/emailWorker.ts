@@ -39,7 +39,7 @@ async function dispatchPendingAlerts() {
         jobId: alert.id,
         attempts: 5,
         backoff: { type: "exponential", delay: 5_000 },
-        removeOnComplete: 1_000,
+        removeOnComplete: { count: 20, age: 86400 },
         removeOnFail: true,
       },
     }))
@@ -109,7 +109,7 @@ export async function startEmailAlertWorker() {
     {
       name: "process-account-deletions",
       data: {},
-      opts: { removeOnComplete: 100, removeOnFail: 100 },
+      opts: { removeOnComplete: { count: 5, age: 3600 }, removeOnFail: { count: 10, age: 86400 } },
     },
   );
 

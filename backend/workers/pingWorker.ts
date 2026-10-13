@@ -17,15 +17,15 @@ export async function startPingWorker() {
   await reconcileProjectSchedulers();
   await pingQueue.upsertJobScheduler(
     SCHEDULER_RECONCILER_ID,
-    { every: 60_000 },
+    { every: 180_000 },
     {
       name: "reconcile-project-schedulers",
       data: {},
       opts: {
         attempts: 3,
         backoff: { type: "exponential", delay: 5_000 },
-        removeOnComplete: 100,
-        removeOnFail: 100,
+        removeOnComplete: { count: 5, age: 3600 },
+        removeOnFail: { count: 10, age: 86400 },
       },
     },
   );
@@ -38,8 +38,8 @@ export async function startPingWorker() {
       opts: {
         attempts: 3,
         backoff: { type: "exponential", delay: 5_000 },
-        removeOnComplete: 100,
-        removeOnFail: 100,
+        removeOnComplete: { count: 5, age: 3600 },
+        removeOnFail: { count: 10, age: 86400 },
       },
     },
   );
