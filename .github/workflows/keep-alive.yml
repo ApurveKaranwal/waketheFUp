@@ -15,8 +15,7 @@ jobs:
         run: |
           URL="${{ secrets.RENDER_API_URL }}"
           if [ -z "$URL" ]; then
-            echo "RENDER_API_URL secret is not set yet. Once your Render service is deployed, set RENDER_API_URL under GitHub Repo Settings -> Secrets and variables -> Actions."
-            exit 0
+            URL="https://wakethefup.onrender.com"
           fi
           echo "Pinging $URL/health/live ..."
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL/health/live")

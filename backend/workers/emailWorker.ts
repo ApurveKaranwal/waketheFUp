@@ -7,8 +7,8 @@ import { recordAlert } from "../services/metrics";
 import { logError, safeErrorSummary } from "../logger";
 import { processPendingAccountDeletions } from "../services/accountDeletion";
 
-const EMAIL_DISPATCH_INTERVAL_MS = 15_000;
-const ACCOUNT_DELETION_DISPATCH_INTERVAL_MS = 60_000;
+const EMAIL_DISPATCH_INTERVAL_MS = 120_000;
+const ACCOUNT_DELETION_DISPATCH_INTERVAL_MS = 600_000;
 const MAX_DISPATCH_BATCH = 100;
 const HEARTBEAT_KEY = "wtfup:health:email-worker";
 const SMTP_HEALTH_KEY = "wtfup:health:smtp";

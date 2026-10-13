@@ -17,8 +17,8 @@ export type MonitorCheckResult = {
   ssl?: SslCertificateInfo;
 };
 
-const httpAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 15_000, maxSockets: 100 });
-const httpsAgent = new https.Agent({ keepAlive: true, keepAliveMsecs: 15_000, maxSockets: 100 });
+const httpAgent = new http.Agent({ keepAlive: true, keepAliveMsecs: 15_000, maxSockets: 25, maxFreeSockets: 10, timeout: 15_000 });
+const httpsAgent = new https.Agent({ keepAlive: true, keepAliveMsecs: 15_000, maxSockets: 25, maxFreeSockets: 10, timeout: 15_000 });
 
 export function requestMonitorCheck(
   target: ResolvedMonitorTarget,

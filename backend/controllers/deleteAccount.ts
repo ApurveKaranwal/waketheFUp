@@ -15,6 +15,20 @@ export default async function deleteAccount(c: AuthContext) {
     }
 
     await requestAccountDeletion(userId, user.clerkId);
+    try {
+      const { emailQueue } = await import("../queues/emailQueue");
+      await emailQueue.add(
+        "process-account-deletions",
+        {},
+        {
+          removeOnComplete: { count: 5, age: 3600 },
+          removeOnFail: { count: 10, age: 86400 },
+        }
+      );
+    } catch (err) {
+      logError("account.deletion_enqueue_failed", err);
+    }
+
     return c.json({
       success: true,
       message: "Your account data has been deleted. Identity cleanup is processing and will retry if needed.",

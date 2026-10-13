@@ -48,7 +48,7 @@ export default async function createPingJob(c: AuthContext) {
         where: { id: userId },
         select: { email: true },
       });
-      await tx.emailAlert.create({
+      const alert = await tx.emailAlert.create({
         data: {
           projectId: createdProject.id,
           incidentNumber: 0,
@@ -57,8 +57,9 @@ export default async function createPingJob(c: AuthContext) {
           projectName: createdProject.name,
           projectUrl: createdProject.url,
         },
+        select: { id: true },
       });
-      return { kind: "created" as const, project: createdProject };
+      return { kind: "created" as const, project: createdProject, alertId: alert.id };
     });
 
     if (creation.kind === "duplicate") {
@@ -73,6 +74,25 @@ export default async function createPingJob(c: AuthContext) {
     }
 
     const project = creation.project;
+
+    if (creation.alertId) {
+      try {
+        const { emailQueue } = await import("../queues/emailQueue");
+        await emailQueue.add(
+          "send-email-alert",
+          { alertId: creation.alertId },
+          {
+            jobId: creation.alertId,
+            attempts: 5,
+            backoff: { type: "exponential", delay: 5_000 },
+            removeOnComplete: { count: 20, age: 86400 },
+            removeOnFail: true,
+          }
+        );
+      } catch (err) {
+        logError("email.enqueue_failed", err, { alertId: creation.alertId });
+      }
+    }
 
     let scheduleSynced = true;
     try {

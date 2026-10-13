@@ -79,7 +79,7 @@ export default async function pingService(project: Project): Promise<PingResult>
         });
 
         if (user?.email) {
-          await tx.emailAlert.create({
+          const alert = await tx.emailAlert.create({
             data: {
               projectId: current.id,
               incidentNumber: transition.incidentNumber,
@@ -90,15 +90,36 @@ export default async function pingService(project: Project): Promise<PingResult>
               status,
               responseTime,
             },
+            select: { id: true },
           });
+          return { consecutiveFailures: transition.failureCount, alertId: alert.id };
         }
       }
 
-      return { consecutiveFailures: transition.failureCount };
+      return { consecutiveFailures: transition.failureCount, alertId: null };
     }
 
     throw new Error(`Could not update monitoring state for project ${project.id}`);
   }, { timeout: 15_000, maxWait: 10_000 });
+
+  if (result?.alertId) {
+    try {
+      const { emailQueue } = await import("../queues/emailQueue");
+      await emailQueue.add(
+        "send-email-alert",
+        { alertId: result.alertId },
+        {
+          jobId: result.alertId,
+          attempts: 5,
+          backoff: { type: "exponential", delay: 5_000 },
+          removeOnComplete: { count: 20, age: 86400 },
+          removeOnFail: true,
+        },
+      );
+    } catch (error) {
+      logError("email.enqueue_failed", error, { alertId: result.alertId });
+    }
+  }
 
   return {
     success,

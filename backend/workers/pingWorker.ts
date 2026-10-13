@@ -9,7 +9,7 @@ import { recordCheck } from "../services/metrics";
 import { logError, logInfo } from "../logger";
 
 const RETENTION_CLEANUP_ID = "retained-data-cleanup";
-const RETENTION_CLEANUP_INTERVAL_MS = 15 * 60_000;
+const RETENTION_CLEANUP_INTERVAL_MS = 6 * 60 * 60_000;
 const HEARTBEAT_KEY = "wtfup:health:ping-worker";
 
 export async function startPingWorker() {
