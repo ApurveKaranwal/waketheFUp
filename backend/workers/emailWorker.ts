@@ -127,7 +127,12 @@ export async function startEmailAlertWorker() {
 
       await sendPendingAlert(job.data.alertId);
     },
-    { connection: redis, concurrency: 5 },
+    {
+      connection: redis,
+      concurrency: 3,
+      drainDelay: 5_000,
+      stalledInterval: 120_000,
+    },
   );
 
   worker.on("failed", (job, error) => {
@@ -148,7 +153,7 @@ export async function startEmailAlertWorker() {
     if (worker.isRunning()) void setHealth(HEARTBEAT_KEY, "ready");
   };
   publishHeartbeat();
-  const heartbeat = setInterval(publishHeartbeat, 10_000);
+  const heartbeat = setInterval(publishHeartbeat, 25_000);
   heartbeat.unref?.();
 
   return {

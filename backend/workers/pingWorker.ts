@@ -85,7 +85,12 @@ export async function startPingWorker() {
           : {}),
       });
     },
-    { connection: redis, concurrency: 20 },
+    {
+      connection: redis,
+      concurrency: 10,
+      drainDelay: 5_000,
+      stalledInterval: 120_000,
+    },
   );
 
   pingWorker.on("failed", (job, err) => {
@@ -99,13 +104,13 @@ export async function startPingWorker() {
   await pingWorker.waitUntilReady();
   const publishHeartbeat = () => {
     if (pingWorker.isRunning()) {
-      void redis.set(HEARTBEAT_KEY, "ready", "EX", 30).catch((error) => {
-          logError("ping.worker_health_update_failed", error);
+      void redis.set(HEARTBEAT_KEY, "ready", "EX", 60).catch((error) => {
+        logError("ping.worker_health_update_failed", error);
       });
     }
   };
   publishHeartbeat();
-  const heartbeat = setInterval(publishHeartbeat, 10_000);
+  const heartbeat = setInterval(publishHeartbeat, 25_000);
   heartbeat.unref?.();
 
   setTimeout(() => {
